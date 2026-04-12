@@ -1462,29 +1462,45 @@
       renderTracks();
       renderQueue();
 
-      // Реальное воспроизведение через прокси
+      // Отправляем трек через сервер — бот пришлёт аудио в чат
       if (t.file_id && window.PROXY_URL) {
-        audioEl.src = window.PROXY_URL + '/audio/' + encodeURIComponent(t.file_id);
-        audioEl.load();
-        audioEl.play().catch(err => {
-          console.warn('Play error:', err);
-          showToast('Нажмите ещё раз для воспроизведения');
-        });
-      } else {
-        // Fallback — симуляция прогресса если прокси не настроен
-        const totalMs = t.duration * 1000;
-        const interval = 500;
-        state.progressTimer = setInterval(() => {
-          if (!state.isPlaying) return;
-          state.progress = Math.min(state.progress + interval, totalMs);
-          const pct = (state.progress / totalMs) * 100;
-          progressFill.style.width = pct + '%';
-          if (state.progress >= totalMs) {
-            clearInterval(state.progressTimer);
-            onTrackEnd();
-          }
-        }, interval);
+        const chatId = tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id;
+        if (chatId) {
+          showToast('⏳ Отправляю в Telegram...');
+          fetch(window.PROXY_URL + '/play', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file_id: t.file_id,
+              chat_id: chatId,
+              title: t.title,
+              artist: t.artist
+            })
+          })
+          .then(r => r.json())
+          .then(res => {
+            if (res.ok) showToast('✅ Отправлено в чат!');
+            else showToast('ℹ️ Откройте чат бота');
+          })
+          .catch(() => showToast('Ошибка связи'));
+        } else {
+          showToast('ℹ️ Откройте плеер через бота');
+        }
       }
+
+      // Симуляция прогресса (визуально)
+      const totalMs = t.duration * 1000;
+      const interval = 500;
+      state.progressTimer = setInterval(() => {
+        if (!state.isPlaying) return;
+        state.progress = Math.min(state.progress + interval, totalMs);
+        const pct = (state.progress / totalMs) * 100;
+        progressFill.style.width = pct + '%';
+        if (state.progress >= totalMs) {
+          clearInterval(state.progressTimer);
+          onTrackEnd();
+        }
+      }, interval);
     }
 
     function onTrackEnd() {
@@ -1763,17 +1779,6 @@
         playTrack = function(track) {
           tg.HapticFeedback.impactOccurred('light');
           origPlayTrack(track);
-          // Отправляем file_id боту — бот пришлёт аудиофайл в чат
-          try {
-            tg.sendData(JSON.stringify({
-              action: 'track_selected',
-              title: track.title,
-              artist: track.artist,
-              file_id: track.file_id || ''
-            }));
-          } catch(e) {
-            console.warn('sendData error:', e);
-          }
         };
 
         const origToggleLike = toggleLike;
