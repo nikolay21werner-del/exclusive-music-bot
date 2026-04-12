@@ -13,6 +13,24 @@ button{cursor:pointer;background:none;border:none;color:inherit;font:inherit}
 input{font:inherit}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#444;border-radius:4px}
 
+
+/* YOUTUBE PLAYER */
+#yt-player-wrap{position:fixed;inset:0;background:#0d0d0d;z-index:999;display:none;flex-direction:column}
+#yt-player-wrap.active{display:flex}
+#yt-player-header{display:flex;align-items:center;padding:16px;gap:12px;background:#111;flex-shrink:0}
+#yt-player-header .yt-back{font-size:24px;color:#fff;padding:4px 8px}
+#yt-player-header .yt-track-info{flex:1;min-width:0}
+#yt-player-header .yt-title{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#yt-player-header .yt-artist{font-size:12px;color:#888;margin-top:2px}
+#yt-player-header .yt-badge{background:#FF0000;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0}
+#yt-iframe-wrap{flex:1;position:relative;background:#000}
+#yt-iframe-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+#yt-controls{background:#111;padding:16px;flex-shrink:0}
+#yt-controls .yt-hint{text-align:center;font-size:12px;color:#555;margin-top:8px}
+.yt-ctrl-row{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:8px}
+.yt-ctrl-btn{font-size:28px;color:#aaa}
+.yt-ctrl-btn.main{width:56px;height:56px;background:#FF0000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff}
+
 /* NAV TABS */
 .nav{display:flex;background:#111;border-bottom:1px solid #2a2a2a;flex-shrink:0}
 .nav-btn{flex:1;padding:14px 0 10px;font-size:11px;color:#888;display:flex;flex-direction:column;align-items:center;gap:4px;transition:color .2s;border-bottom:2px solid transparent}
@@ -516,48 +534,72 @@ function playLocal(id){
   showPage('player');
 }
 
-// PLAY WORLD TRACK (Deezer/iTunes metadata + YouTube full audio)
+// PLAY WORLD TRACK — YouTube iframe (full track)
 async function playDeezer(t){
-  currentSource = 'deezer';
-  currentTrack = t;
-  // Show player immediately with loading state
-  showPage('player');
-  document.getElementById('fp-title').textContent = t.title;
-  document.getElementById('fp-artist').textContent = t.artist||'';
-  document.getElementById('fp-source').textContent = '⏳ Загружаем...';
-  document.getElementById('btn-play').textContent = '⏳';
-  // Update cover
-  const cover = document.getElementById('fp-cover');
+  // Pause local audio if playing
+  const audioEl = document.getElementById('audioEl');
+  audioEl.pause();
+  isPlaying = false;
+
+  // Set mini player info
+  document.getElementById('mini-title').textContent = t.title;
+  document.getElementById('mini-artist').textContent = t.artist||'';
+  const mc = document.getElementById('mini-cover');
   if(t.cover){
-    cover.innerHTML=`<img src="${t.cover}" onerror="this.parentNode.innerHTML='<span class=cover-emoji>🎵</span>'">`;
-    cover.className='fp-cover';
-  } else {
-    cover.className='fp-cover g-remix';
-    cover.innerHTML='<span class="cover-emoji">🎵</span>';
+    mc.innerHTML=`<img src="${t.cover}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
+    mc.className='mini-cover';
   }
-  updateMini();
   document.getElementById('mini').classList.add('visible');
 
-  // Try YouTube full track first
-  const q = encodeURIComponent(t.title + ' ' + t.artist);
-  try {
-    const r = await fetch(PROXY + '/yt/url?q=' + q, {signal: AbortSignal.timeout(12000)});
-    const d = await r.json();
-    if(d.url){
-      t.ytUrl = d.url;
-      t.duration = t.duration; // keep original
-      loadTrackFromUrl(t, d.url, 'YOUTUBE · ПОЛНЫЙ ТРЕК');
-      return;
-    }
-  } catch(e){}
+  // Open YouTube player
+  openYtPlayer(t);
+}
 
-  // Fallback: use preview (30 sec)
-  if(t.preview){
-    loadTrackFromUrl(t, t.preview, 'ПРЕВЬЮ 30 СЕК');
-  } else {
-    document.getElementById('fp-source').textContent = '❌ Трек недоступен';
-    document.getElementById('btn-play').textContent = '▶';
+async function openYtPlayer(t){
+  document.getElementById('yt-title').textContent = t.title;
+  document.getElementById('yt-artist').textContent = t.artist||'';
+  document.getElementById('yt-player-wrap').classList.add('active');
+  document.getElementById('yt-iframe').src = '';
+
+  // Search YouTube for video ID
+  const q = encodeURIComponent(t.title + ' ' + (t.artist||'') + ' official audio');
+  try{
+    // Use YouTube Data API via invidious (free, no key needed)
+    const apis = [
+      'https://inv.nadeko.net/api/v1/search?q='+q+'&type=video&fields=videoId,title&page=1',
+      'https://invidious.nerdvpn.de/api/v1/search?q='+q+'&type=video&fields=videoId,title&page=1',
+      'https://invidious.privacyredirect.com/api/v1/search?q='+q+'&type=video&fields=videoId,title&page=1'
+    ];
+    let videoId = null;
+    for(const api of apis){
+      try{
+        const r = await fetch(api, {signal: AbortSignal.timeout(6000)});
+        if(!r.ok) continue;
+        const data = await r.json();
+        if(Array.isArray(data) && data.length > 0){
+          videoId = data[0].videoId;
+          break;
+        }
+      }catch(e){ continue; }
+    }
+    if(videoId){
+      // Embed YouTube with autoplay
+      document.getElementById('yt-iframe').src =
+        `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    } else {
+      // Fallback: open YouTube search in iframe
+      document.getElementById('yt-iframe').src =
+        `https://www.youtube.com/results?search_query=${q}`;
+    }
+  }catch(e){
+    document.getElementById('yt-iframe').src =
+      `https://www.youtube.com/results?search_query=${q}`;
   }
+}
+
+function closeYtPlayer(){
+  document.getElementById('yt-player-wrap').classList.remove('active');
+  document.getElementById('yt-iframe').src = '';
 }
 
 function loadTrackFromUrl(t, url, sourceLabel){
@@ -880,5 +922,24 @@ setTimeout(()=>{
   if(!currentTrack){ playLocal(TRACKS[0].id); audio.pause(); isPlaying=false; document.getElementById('btn-play').textContent='▶'; document.getElementById('mini-play').textContent='▶'; }
 },300);
 </script>
+
+<!-- YOUTUBE FULL PLAYER -->
+<div id="yt-player-wrap">
+  <div id="yt-player-header">
+    <button class="yt-back" onclick="closeYtPlayer()">‹</button>
+    <div class="yt-track-info">
+      <div class="yt-title" id="yt-title">Загрузка...</div>
+      <div class="yt-artist" id="yt-artist"></div>
+    </div>
+    <div class="yt-badge">YouTube</div>
+  </div>
+  <div id="yt-iframe-wrap">
+    <iframe id="yt-iframe" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+  </div>
+  <div id="yt-controls">
+    <div class="yt-hint">▶ Полный трек · YouTube Music</div>
+  </div>
+</div>
+
 </body>
 </html>
