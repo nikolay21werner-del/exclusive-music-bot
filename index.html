@@ -516,11 +516,61 @@ function playLocal(id){
   showPage('player');
 }
 
-// PLAY DEEZER
-function playDeezer(t){
+// PLAY WORLD TRACK (Deezer/iTunes metadata + YouTube full audio)
+async function playDeezer(t){
   currentSource = 'deezer';
-  loadTrack(t);
+  currentTrack = t;
+  // Show player immediately with loading state
   showPage('player');
+  document.getElementById('fp-title').textContent = t.title;
+  document.getElementById('fp-artist').textContent = t.artist||'';
+  document.getElementById('fp-source').textContent = '⏳ Загружаем...';
+  document.getElementById('btn-play').textContent = '⏳';
+  // Update cover
+  const cover = document.getElementById('fp-cover');
+  if(t.cover){
+    cover.innerHTML=`<img src="${t.cover}" onerror="this.parentNode.innerHTML='<span class=cover-emoji>🎵</span>'">`;
+    cover.className='fp-cover';
+  } else {
+    cover.className='fp-cover g-remix';
+    cover.innerHTML='<span class="cover-emoji">🎵</span>';
+  }
+  updateMini();
+  document.getElementById('mini').classList.add('visible');
+
+  // Try YouTube full track first
+  const q = encodeURIComponent(t.title + ' ' + t.artist);
+  try {
+    const r = await fetch(PROXY + '/yt/url?q=' + q, {signal: AbortSignal.timeout(12000)});
+    const d = await r.json();
+    if(d.url){
+      t.ytUrl = d.url;
+      t.duration = t.duration; // keep original
+      loadTrackFromUrl(t, d.url, 'YOUTUBE · ПОЛНЫЙ ТРЕК');
+      return;
+    }
+  } catch(e){}
+
+  // Fallback: use preview (30 sec)
+  if(t.preview){
+    loadTrackFromUrl(t, t.preview, 'ПРЕВЬЮ 30 СЕК');
+  } else {
+    document.getElementById('fp-source').textContent = '❌ Трек недоступен';
+    document.getElementById('btn-play').textContent = '▶';
+  }
+}
+
+function loadTrackFromUrl(t, url, sourceLabel){
+  const audio = document.getElementById('audioEl');
+  audio.src = url;
+  audio.play().catch(()=>{});
+  isPlaying = true;
+  document.getElementById('fp-source').textContent = sourceLabel;
+  document.getElementById('btn-play').textContent = '⏸';
+  document.getElementById('mini-play').textContent = '⏸';
+  document.getElementById('fp-counter').textContent = sourceLabel;
+  palIdx = (palIdx+1)%8;
+  startWave();
 }
 
 function loadTrack(t){
