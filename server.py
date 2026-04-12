@@ -76,3 +76,69 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"🎵 EXCLUSIVE MUSIC BOT proxy на порту {port}")
     app.run(host="0.0.0.0", port=port, threaded=True)
+
+
+import subprocess
+import json as _json
+
+@app.route("/yt/url")
+def yt_url():
+    """Возвращает прямую аудио-ссылку YouTube по запросу."""
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify({"error": "no query"}), 400
+    try:
+        result = subprocess.run(
+            ["yt-dlp", "-f", "bestaudio", "--get-url",
+             "--no-playlist", f"ytsearch1:{q}"],
+            capture_output=True, text=True, timeout=15
+        )
+        url = result.stdout.strip().split("\n")[0]
+        if not url:
+            return jsonify({"error": "not found"}), 404
+        return jsonify({"url": url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/yt/stream")
+def yt_stream():
+    """Стримит аудио с YouTube напрямую."""
+    q = request.args.get("q", "").strip()
+    if not q:
+        return jsonify({"error": "no query"}), 400
+    try:
+        result = subprocess.run(
+            ["yt-dlp", "-f", "bestaudio", "--get-url",
+             "--no-playlist", f"ytsearch1:{q}"],
+            capture_output=True, text=True, timeout=15
+        )
+        yt_url_str = result.stdout.strip().split("\n")[0]
+        if not yt_url_str:
+            return jsonify({"error": "not found"}), 404
+
+        range_header = request.headers.get("Range")
+        req_headers = {"Range": range_header} if range_header else {}
+        req_headers["User-Agent"] = "Mozilla/5.0"
+
+        r = requests.get(yt_url_str, headers=req_headers, stream=True, timeout=60)
+        ctype = r.headers.get("Content-Type", "audio/webm")
+
+        resp_headers = {
+            "Content-Type": ctype,
+            "Accept-Ranges": "bytes",
+            "Cache-Control": "public, max-age=600",
+            "Access-Control-Allow-Origin": "*",
+        }
+        for h in ("Content-Length", "Content-Range"):
+            if h in r.headers:
+                resp_headers[h] = r.headers[h]
+
+        def generate():
+            for chunk in r.iter_content(chunk_size=16384):
+                if chunk:
+                    yield chunk
+
+        return Response(generate(), status=r.status_code, headers=resp_headers)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
