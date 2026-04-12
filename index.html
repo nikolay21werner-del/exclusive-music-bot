@@ -1,1031 +1,1066 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0f0e15" />
-  <title>EXCLUSIVE MUSIC BOT</title>
-
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <!-- Fonts -->
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
-
-  <style>
-    /* ===== DESIGN TOKENS ===== */
-    :root {
-      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
-      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
-
-      --space-1: 0.25rem;
-      --space-2: 0.5rem;
-      --space-3: 0.75rem;
-      --space-4: 1rem;
-      --space-5: 1.25rem;
-      --space-6: 1.5rem;
-      --space-8: 2rem;
-      --space-10: 2.5rem;
-      --space-12: 3rem;
-
-      --radius-sm: 0.375rem;
-      --radius-md: 0.75rem;
-      --radius-lg: 1.25rem;
-      --radius-xl: 1.75rem;
-      --radius-full: 9999px;
-
-      --transition-fast: 140ms cubic-bezier(0.16, 1, 0.3, 1);
-      --transition-interactive: 220ms cubic-bezier(0.16, 1, 0.3, 1);
-      --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
-
-      --font-display: 'Clash Display', 'SF Pro Display', sans-serif;
-      --font-body: 'Satoshi', 'SF Pro Text', sans-serif;
-    }
-
-    /* ===== DARK THEME ===== */
-    [data-theme="dark"] {
-      --color-bg: #0f0e15;
-      --color-surface: #16151f;
-      --color-surface-2: #1d1c28;
-      --color-surface-3: #242333;
-      --color-border: #2e2c42;
-      --color-text: #e8e6f0;
-      --color-text-muted: #8b89a0;
-      --color-text-faint: #4e4c62;
-
-      --color-accent: #7c5cfc;
-      --color-accent-bright: #9d7eff;
-      --color-accent-hover: #6b4aeb;
-      --color-accent-glow: rgba(124, 92, 252, 0.25);
-      --color-accent-highlight: rgba(124, 92, 252, 0.12);
-
-      --color-pink: #fc5ca8;
-      --color-pink-glow: rgba(252, 92, 168, 0.2);
-
-      --color-green: #3ec97b;
-      --color-green-dim: rgba(62, 201, 123, 0.15);
-
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
-      --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
-      --shadow-glow: 0 0 40px var(--color-accent-glow), 0 0 80px rgba(124, 92, 252, 0.1);
-    }
-
-    /* ===== LIGHT THEME ===== */
-    [data-theme="light"] {
-      --color-bg: #f0eeff;
-      --color-surface: #ffffff;
-      --color-surface-2: #f5f3ff;
-      --color-surface-3: #ede9ff;
-      --color-border: #d8d3f5;
-      --color-text: #1a1830;
-      --color-text-muted: #6b6690;
-      --color-text-faint: #b0adc8;
-
-      --color-accent: #6b4aeb;
-      --color-accent-bright: #7c5cfc;
-      --color-accent-hover: #5a39d6;
-      --color-accent-glow: rgba(107, 74, 235, 0.2);
-      --color-accent-highlight: rgba(107, 74, 235, 0.1);
-
-      --color-pink: #e0457f;
-      --color-pink-glow: rgba(224, 69, 127, 0.15);
-
-      --color-green: #1fa85a;
-      --color-green-dim: rgba(31, 168, 90, 0.12);
-
-      --shadow-sm: 0 1px 3px rgba(100,90,200,0.1);
-      --shadow-md: 0 4px 16px rgba(100,90,200,0.12);
-      --shadow-lg: 0 12px 40px rgba(100,90,200,0.15);
-      --shadow-glow: 0 0 40px var(--color-accent-glow);
-    }
-
-    /* ===== BASE ===== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-      scroll-behavior: smooth;
-      overscroll-behavior: none;
-    }
-
-    body {
-      min-height: 100dvh;
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      color: var(--color-text);
-      background-color: var(--color-bg);
-      overflow-x: hidden;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    img, svg { display: block; max-width: 100%; }
-    button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
-    input { font: inherit; color: inherit; }
-
-    a, button, [role="button"] {
-      transition: color var(--transition-fast), background var(--transition-fast),
-        opacity var(--transition-fast), transform var(--transition-fast),
-        box-shadow var(--transition-fast);
-    }
-
-    :focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 3px;
-      border-radius: var(--radius-sm);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-
-    /* ===== APP LAYOUT ===== */
-    .app {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      max-width: 480px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    /* ===== HEADER ===== */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: var(--space-4) var(--space-5);
-      padding-top: max(var(--space-4), env(safe-area-inset-top));
-      flex-shrink: 0;
-      position: relative;
-      z-index: 10;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-    }
-
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--color-accent), var(--color-pink));
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px var(--color-accent-glow);
-    }
-
-    .logo-text {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(0.75rem, 3.2vw, 1.15rem);
-      letter-spacing: 0.04em;
-      line-height: 1.1;
-      background: linear-gradient(135deg, var(--color-accent-bright), var(--color-pink));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      white-space: nowrap;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: var(--radius-md);
-      background: var(--color-surface-2);
-      border: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-text-muted);
-      flex-shrink: 0;
-    }
-
-    .icon-btn:hover {
-      color: var(--color-text);
-      background: var(--color-surface-3);
-    }
-
-    .icon-btn:active { transform: scale(0.92); }
-
-    /* ===== SEARCH ===== */
-    .search-wrap {
-      padding: 0 var(--space-5) var(--space-4);
-      flex-shrink: 0;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-full);
-      padding: var(--space-3) var(--space-5);
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .search-box:focus-within {
-      border-color: var(--color-accent);
-      box-shadow: 0 0 0 3px var(--color-accent-highlight);
-    }
-
-    .search-box svg { color: var(--color-text-muted); flex-shrink: 0; }
-
-    .search-box input {
-      border: none;
-      outline: none;
-      background: transparent;
-      flex: 1;
-      font-size: var(--text-sm);
-      color: var(--color-text);
-    }
-
-    .search-box input::placeholder { color: var(--color-text-faint); }
-
-    .search-clear {
-      color: var(--color-text-muted);
-      padding: var(--space-1);
-      border-radius: var(--radius-full);
-      display: none;
-    }
-    .search-clear:hover { color: var(--color-text); }
-    .search-clear.visible { display: flex; }
-
-    /* ===== TABS ===== */
-    .tabs {
-      display: flex;
-      padding: 0 var(--space-5) var(--space-4);
-      gap: var(--space-2);
-      flex-shrink: 0;
-    }
-
-    .tab-btn {
-      font-size: var(--text-sm);
-      font-weight: 500;
-      padding: var(--space-2) var(--space-4);
-      border-radius: var(--radius-full);
-      border: 1px solid var(--color-border);
-      background: var(--color-surface);
-      color: var(--color-text-muted);
-      transition: all var(--transition-fast);
-      white-space: nowrap;
-    }
-
-    .tab-btn.active {
-      background: var(--color-accent);
-      border-color: var(--color-accent);
-      color: #fff;
-      box-shadow: 0 4px 12px var(--color-accent-glow);
-    }
-
-    .tab-btn:hover:not(.active) {
-      color: var(--color-text);
-      border-color: var(--color-accent);
-    }
-
-    /* ===== TRACK LIST ===== */
-    .scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 var(--space-5);
-      padding-bottom: calc(var(--space-4) + 180px);
-      overscroll-behavior: contain;
-      scroll-behavior: smooth;
-    }
-
-    .scroll-area::-webkit-scrollbar { width: 3px; }
-    .scroll-area::-webkit-scrollbar-track { background: transparent; }
-    .scroll-area::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: var(--radius-full); }
-
-    .section-label {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--color-text-faint);
-      margin-bottom: var(--space-3);
-      padding-top: var(--space-4);
-    }
-
-    /* ===== GENRE CHIPS ===== */
-    .genre-row {
-      display: flex;
-      gap: var(--space-2);
-      overflow-x: auto;
-      padding-bottom: var(--space-3);
-      scrollbar-width: none;
-      margin-bottom: var(--space-2);
-    }
-    .genre-row::-webkit-scrollbar { display: none; }
-
-    .genre-chip {
-      font-size: var(--text-xs);
-      font-weight: 600;
-      padding: var(--space-2) var(--space-4);
-      border-radius: var(--radius-full);
-      border: 1px solid var(--color-border);
-      background: var(--color-surface);
-      color: var(--color-text-muted);
-      white-space: nowrap;
-      transition: all var(--transition-fast);
-      letter-spacing: 0.04em;
-    }
-
-    .genre-chip.active {
-      border-color: var(--color-accent);
-      background: var(--color-accent-highlight);
-      color: var(--color-accent-bright);
-    }
-    .genre-chip:hover:not(.active) {
-      border-color: var(--color-accent);
-      color: var(--color-text);
-    }
-
-    /* ===== TRACK CARD ===== */
-    .track-list { display: flex; flex-direction: column; gap: var(--space-2); }
-
-    .track-card {
-      display: flex;
-      align-items: center;
-      gap: var(--space-4);
-      padding: var(--space-3) var(--space-4);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .track-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, var(--color-accent-highlight), transparent);
-      opacity: 0;
-      transition: opacity var(--transition-fast);
-    }
-
-    .track-card:hover { border-color: var(--color-accent); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-    .track-card:hover::before { opacity: 1; }
-    .track-card:active { transform: scale(0.98); }
-
-    .track-card.playing {
-      border-color: var(--color-accent);
-      background: var(--color-surface-2);
-      box-shadow: 0 0 0 1px var(--color-accent), var(--shadow-md);
-    }
-
-    .track-card.playing::before { opacity: 1; }
-
-    .track-cover {
-      width: 52px;
-      height: 52px;
-      border-radius: var(--radius-md);
-      flex-shrink: 0;
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, var(--color-surface-3), var(--color-border));
-    }
-
-    .cover-art {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-    }
-
-    .cover-bars {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 2px;
-      padding: 6px;
-      background: rgba(0,0,0,0.5);
-      opacity: 0;
-      transition: opacity var(--transition-fast);
-    }
-
-    .track-card.playing .cover-bars { opacity: 1; }
-
-    .bar {
-      width: 4px;
-      background: var(--color-accent-bright);
-      border-radius: 2px;
-      animation: bounce var(--dur, 0.8s) ease-in-out infinite alternate;
-    }
-    .bar:nth-child(1) { --dur: 0.6s; animation-delay: 0s; }
-    .bar:nth-child(2) { --dur: 0.8s; animation-delay: 0.1s; }
-    .bar:nth-child(3) { --dur: 0.7s; animation-delay: 0.05s; }
-    .bar:nth-child(4) { --dur: 0.9s; animation-delay: 0.15s; }
-
-    @keyframes bounce {
-      from { height: 4px; }
-      to { height: 24px; }
-    }
-
-    .track-card.paused .bar { animation-play-state: paused; }
-
-    .track-info { flex: 1; min-width: 0; }
-
-    .track-title {
-      font-weight: 600;
-      font-size: var(--text-sm);
-      color: var(--color-text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.3;
-    }
-
-    .track-card.playing .track-title { color: var(--color-accent-bright); }
-
-    .track-artist {
-      font-size: var(--text-xs);
-      color: var(--color-text-muted);
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .track-meta {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      flex-shrink: 0;
-    }
-
-    .track-duration {
-      font-size: var(--text-xs);
-      color: var(--color-text-faint);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .track-like {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--radius-full);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--color-text-muted);
-      transition: all var(--transition-fast);
-    }
-
-    .track-like:hover { color: var(--color-pink); transform: scale(1.15); }
-    .track-like.liked { color: var(--color-pink); }
-    .track-like.liked svg { fill: var(--color-pink); }
-
-    /* ===== EMPTY / NO RESULTS ===== */
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: var(--space-12) var(--space-8);
-      gap: var(--space-4);
-      text-align: center;
-    }
-
-    .empty-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--color-surface-2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-    }
-
-    .empty-title {
-      font-family: var(--font-display);
-      font-size: var(--text-lg);
-      font-weight: 600;
-    }
-
-    .empty-desc {
-      font-size: var(--text-sm);
-      color: var(--color-text-muted);
-      max-width: 260px;
-    }
-
-    /* ===== PLAYER (BOTTOM) ===== */
-    .player-wrap {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 480px;
-      padding: var(--space-3) var(--space-4);
-      padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
-      background: var(--color-surface);
-      border-top: 1px solid var(--color-border);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      z-index: 100;
-      transition: transform var(--transition-slow), opacity var(--transition-slow);
-    }
-
-    .player-wrap.hidden {
-      transform: translateX(-50%) translateY(120%);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* Glow behind player */
-    .player-wrap::before {
-      content: '';
-      position: absolute;
-      top: -40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 200px;
-      height: 40px;
-      background: radial-gradient(ellipse, var(--color-accent-glow) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    /* Mini player (collapsed) */
-    .mini-player {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      cursor: pointer;
-      margin-bottom: var(--space-3);
-      padding: var(--space-2) var(--space-3);
-      background: var(--color-surface-2);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--color-border);
-      transition: background var(--transition-fast);
-    }
-    .mini-player:hover { background: var(--color-surface-3); }
-
-    .mini-cover {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--radius-md);
-      background: linear-gradient(135deg, var(--color-accent), var(--color-pink));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px var(--color-accent-glow);
-      animation: spin-slow 8s linear infinite;
-      animation-play-state: paused;
-    }
-
-    .mini-cover.spinning { animation-play-state: running; }
-
-    @keyframes spin-slow {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .mini-info { flex: 1; min-width: 0; }
-
-    .mini-title {
-      font-weight: 600;
-      font-size: var(--text-sm);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--color-accent-bright);
-    }
-
-    .mini-artist {
-      font-size: var(--text-xs);
-      color: var(--color-text-muted);
-    }
-
-    /* Progress bar (mini) */
-    .progress-mini {
-      width: 100%;
-      height: 3px;
-      background: var(--color-border);
-      border-radius: var(--radius-full);
-      overflow: hidden;
-      margin-top: var(--space-2);
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--color-accent), var(--color-pink));
-      border-radius: var(--radius-full);
-      transition: width 0.5s linear;
-    }
-
-    /* Controls */
-    .controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-4);
-    }
-
-    .ctrl-btn {
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--radius-full);
-      color: var(--color-text-muted);
-      transition: all var(--transition-fast);
-    }
-
-    .ctrl-btn:hover { color: var(--color-text); transform: scale(1.1); }
-    .ctrl-btn:active { transform: scale(0.9); }
-
-    .ctrl-btn.primary {
-      width: 54px;
-      height: 54px;
-      background: var(--color-accent);
-      color: #fff;
-      box-shadow: 0 4px 20px var(--color-accent-glow);
-    }
-
-    .ctrl-btn.primary:hover {
-      background: var(--color-accent-hover);
-      transform: scale(1.06);
-      box-shadow: 0 6px 28px var(--color-accent-glow);
-    }
-
-    .ctrl-btn.active { color: var(--color-accent-bright); }
-
-    /* ===== QUEUE PANEL ===== */
-    .queue-panel {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity var(--transition-slow);
-    }
-
-    .queue-panel.open {
-      pointer-events: all;
-      opacity: 1;
-    }
-
-    .queue-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-
-    .queue-sheet {
-      position: relative;
-      background: var(--color-surface);
-      border-top: 1px solid var(--color-border);
-      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-      max-height: 75dvh;
-      display: flex;
-      flex-direction: column;
-      transform: translateY(100%);
-      transition: transform var(--transition-slow);
-      max-width: 480px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .queue-panel.open .queue-sheet {
-      transform: translateY(0);
-    }
-
-    .queue-handle {
-      width: 40px;
-      height: 4px;
-      background: var(--color-border);
-      border-radius: var(--radius-full);
-      margin: var(--space-3) auto var(--space-4);
-      flex-shrink: 0;
-    }
-
-    .queue-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 var(--space-5) var(--space-4);
-      flex-shrink: 0;
-    }
-
-    .queue-title {
-      font-family: var(--font-display);
-      font-size: var(--text-lg);
-      font-weight: 700;
-    }
-
-    .queue-count {
-      font-size: var(--text-xs);
-      color: var(--color-text-muted);
-      background: var(--color-surface-3);
-      padding: var(--space-1) var(--space-3);
-      border-radius: var(--radius-full);
-    }
-
-    .queue-list {
-      overflow-y: auto;
-      padding: 0 var(--space-4);
-      padding-bottom: max(var(--space-8), env(safe-area-inset-bottom));
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-2);
-    }
-
-    .queue-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      padding: var(--space-3);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: background var(--transition-fast);
-    }
-
-    .queue-item:hover { background: var(--color-surface-2); }
-    .queue-item.current { background: var(--color-accent-highlight); }
-
-    .queue-num {
-      width: 24px;
-      font-size: var(--text-xs);
-      color: var(--color-text-faint);
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-      flex-shrink: 0;
-    }
-
-    .queue-item.current .queue-num { color: var(--color-accent-bright); font-weight: 700; }
-
-    .queue-cover {
-      width: 40px;
-      height: 40px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      background: var(--color-surface-3);
-      flex-shrink: 0;
-    }
-
-    .queue-info { flex: 1; min-width: 0; }
-
-    .queue-name {
-      font-size: var(--text-sm);
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .queue-item.current .queue-name { color: var(--color-accent-bright); font-weight: 600; }
-
-    .queue-artist-text {
-      font-size: var(--text-xs);
-      color: var(--color-text-muted);
-    }
-
-    .queue-dur {
-      font-size: var(--text-xs);
-      color: var(--color-text-faint);
-      font-variant-numeric: tabular-nums;
-      flex-shrink: 0;
-    }
-
-    /* ===== VISUALIZER ===== */
-    .visualizer {
-      height: 40px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 2px;
-      margin-bottom: var(--space-2);
-      overflow: hidden;
-    }
-
-    .viz-bar {
-      width: 3px;
-      background: linear-gradient(0deg, var(--color-accent), var(--color-pink));
-      border-radius: 2px;
-      opacity: 0.6;
-      animation: viz var(--d, 0.8s) ease-in-out infinite alternate;
-      animation-play-state: paused;
-    }
-
-    .viz-bar.active { animation-play-state: running; opacity: 1; }
-
-    @keyframes viz {
-      from { height: 4px; }
-      to { height: var(--h, 30px); }
-    }
-
-    /* ===== TOAST ===== */
-    .toast {
-      position: fixed;
-      top: max(var(--space-10), env(safe-area-inset-top));
-      left: 50%;
-      transform: translateX(-50%) translateY(-80px);
-      background: var(--color-surface-3);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-full);
-      padding: var(--space-3) var(--space-5);
-      font-size: var(--text-sm);
-      font-weight: 500;
-      z-index: 500;
-      white-space: nowrap;
-      box-shadow: var(--shadow-lg);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .toast.visible {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    /* ===== FADE IN ANIMATION ===== */
-    .track-card {
-      animation: fadeUp 0.3s ease both;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Exclusive Music Bot</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #000;
+    --surface: #111;
+    --surface2: #1a1a1a;
+    --surface3: #222;
+    --text: #fff;
+    --text2: rgba(255,255,255,0.6);
+    --text3: rgba(255,255,255,0.35);
+    --accent: #FFCC00;
+    --radius: 12px;
+    --mini-h: 72px;
+    --nav-h: 58px;
+    --header-h: 56px;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* ========== MAIN APP ========== */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0 16px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .header-logo svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* ========== BLOB ========== */
+  .blob-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 320px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .blob-container.visible {
+    opacity: 1;
+  }
+
+  .blob {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: blob-breathe 4s ease-in-out infinite;
+    transition: background 0.8s ease;
+  }
+
+  .blob-inner {
+    position: absolute;
+    inset: 30px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.6;
+    animation: blob-breathe 4s ease-in-out infinite reverse;
+    transition: background 0.8s ease;
+  }
+
+  @keyframes blob-breathe {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.15); opacity: 0.8; }
+  }
+
+  /* ========== SCROLL AREA ========== */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    z-index: 1;
+    padding-bottom: calc(var(--mini-h) + var(--nav-h) + 8px);
+  }
+
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* ========== TABS ========== */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ========== SEARCH BAR ========== */
+  .search-bar {
+    padding: 12px 16px 8px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(to bottom, #000 70%, transparent);
+  }
+
+  .search-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text3);
+    font-size: 16px;
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 15px;
+    padding: 10px 12px 10px 38px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 10px;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 11px;
+    display: none;
+  }
+
+  /* ========== SECTION HEADER ========== */
+  .section-header {
+    padding: 16px 16px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .section-count {
+    font-size: 13px;
+    color: var(--text3);
+  }
+
+  /* ========== TRACK LIST ========== */
+  .track-list {
+    padding: 0 8px;
+  }
+
+  .track-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 8px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .track-item:active {
+    background: var(--surface2);
+    transform: scale(0.98);
+  }
+
+  .track-item.playing {
+    background: var(--surface2);
+  }
+
+  .track-cover {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .track-cover.spinning {
+    animation: spin 4s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .track-cover .playing-indicator {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    border-radius: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .track-item.playing .track-cover .playing-indicator {
+    opacity: 1;
+  }
+
+  .playing-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 18px;
+  }
+
+  .playing-bars span {
+    width: 3px;
+    background: #fff;
+    border-radius: 2px;
+    animation: bar-dance 0.8s ease-in-out infinite;
+  }
+
+  .playing-bars span:nth-child(2) { animation-delay: 0.2s; }
+  .playing-bars span:nth-child(3) { animation-delay: 0.1s; }
+
+  @keyframes bar-dance {
+    0%, 100% { height: 5px; }
+    50% { height: 16px; }
+  }
+
+  .track-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .track-title {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+
+  .track-artist {
+    font-size: 12px;
+    color: var(--text2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .track-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .track-duration {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .track-like-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .track-like-btn:active {
+    transform: scale(1.3);
+  }
+
+  /* ========== EMPTY STATE ========== */
+  .empty-state {
+    padding: 60px 24px;
+    text-align: center;
+  }
+
+  .empty-state-icon {
+    font-size: 52px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-state-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+
+  .empty-state-text {
+    font-size: 14px;
+    color: var(--text3);
+    line-height: 1.5;
+  }
+
+  /* ========== MINI PLAYER ========== */
+  #mini-player {
+    position: fixed;
+    bottom: var(--nav-h);
+    left: 0;
+    right: 0;
+    height: var(--mini-h);
+    background: rgba(20,20,20,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 10px;
+    z-index: 50;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  #mini-player.visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .mini-cover {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+
+  .mini-cover.spinning {
+    animation: spin 4s linear infinite;
+  }
+
+  .mini-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mini-title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+
+  .mini-artist {
+    font-size: 11px;
+    color: var(--text2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mini-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .mini-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border-radius: 50%;
+    transition: background 0.15s, transform 0.1s;
+    padding: 0;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .mini-btn:active { transform: scale(0.88); }
+
+  .mini-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: rgba(255,255,255,0.15);
+    width: 100%;
+  }
+
+  .mini-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.5s linear;
+  }
+
+  /* ========== BOTTOM NAV ========== */
+  #bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-h);
+    background: rgba(12,12,12,0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    z-index: 60;
+  }
+
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 8px 0;
+    color: var(--text3);
+    transition: color 0.2s;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .nav-btn.active {
+    color: var(--text);
+  }
+
+  .nav-btn .nav-icon {
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.2s;
+  }
+
+  .nav-btn.active .nav-icon {
+    transform: scale(1.1);
+  }
+
+  /* ========== FULL PLAYER ========== */
+  #full-player {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+  }
+
+  #full-player.open {
+    transform: translateY(0);
+  }
+
+  .fp-bg {
+    position: absolute;
+    inset: 0;
+    transition: background 0.8s ease;
+  }
+
+  .fp-blob1, .fp-blob2 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    animation: blob-breathe 5s ease-in-out infinite;
+  }
+
+  .fp-blob1 {
+    width: 300px;
+    height: 300px;
+    top: -60px;
+    left: -60px;
+    opacity: 0.35;
+  }
+
+  .fp-blob2 {
+    width: 250px;
+    height: 250px;
+    bottom: 60px;
+    right: -40px;
+    opacity: 0.25;
+    animation-delay: -2s;
+  }
+
+  .fp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 0;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .fp-close-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 18px;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .fp-close-btn:active { transform: scale(0.9); }
+
+  .fp-title-small {
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  .fp-menu-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 18px;
+    flex-direction: column;
+    gap: 3px;
+    padding: 0;
+    transition: background 0.15s;
+  }
+
+  .fp-menu-btn span {
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 50%;
+    display: block;
+  }
+
+  .fp-artwork-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    padding: 0 20px;
+    min-height: 0;
+  }
+
+  .fp-artwork {
+    width: min(260px, 65vw);
+    height: min(260px, 65vw);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(64px, 18vw, 90px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transition: background 0.6s ease, box-shadow 0.6s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .fp-artwork.spinning {
+    animation: spin 6s linear infinite;
+  }
+
+  .fp-artwork::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.12);
+  }
+
+  .fp-info {
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .fp-track-title {
+    font-size: clamp(18px, 5vw, 22px);
+    font-weight: 700;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fp-track-artist {
+    font-size: 15px;
+    color: var(--text2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fp-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px 0;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .fp-action-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border-radius: 50%;
+    transition: transform 0.15s, opacity 0.2s;
+    padding: 0;
+    line-height: 1;
+    color: var(--text2);
+  }
+
+  .fp-action-btn:active { transform: scale(0.85); }
+  .fp-action-btn.active { color: var(--text); opacity: 1; }
+
+  /* ========== PROGRESS BAR ========== */
+  .fp-progress-area {
+    padding: 8px 24px 0;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .progress-bar-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 4px;
+    width: 0%;
+    pointer-events: none;
+    transition: width 0.3s linear;
+  }
+
+  .progress-times {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ========== PLAYBACK CONTROLS ========== */
+  .fp-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+  }
+
+  .ctrl-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: transform 0.15s, opacity 0.2s;
+    padding: 0;
+    color: var(--text);
+    font-size: 28px;
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  .ctrl-btn:active { transform: scale(0.88); }
+  .ctrl-btn.active { opacity: 1; }
+
+  .ctrl-play {
+    width: 68px;
+    height: 68px;
+    background: #fff;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #000;
+    font-size: 28px;
+    transition: transform 0.15s, background 0.2s;
+    box-shadow: 0 4px 20px rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    line-height: 1;
+    padding-left: 3px;
+  }
+
+  .ctrl-play:active { transform: scale(0.92); }
+
+  .ctrl-play.paused {
+    padding-left: 3px;
+  }
+
+  .ctrl-play.playing {
+    padding-left: 0;
+  }
+
+  /* ========== TOAST ========== */
+  #toast {
+    position: fixed;
+    bottom: calc(var(--mini-h) + var(--nav-h) + 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(40,40,40,0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ========== GENRE PILL ========== */
+  .genre-pills {
+    display: flex;
+    gap: 8px;
+    padding: 4px 16px 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .genre-pills::-webkit-scrollbar { display: none; }
+
+  .genre-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    color: var(--text2);
+    background: transparent;
+  }
+
+  .genre-pill.active {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.3);
+    color: var(--text);
+  }
+</style>
 </head>
 <body>
-  <div class="app">
-    <!-- HEADER -->
-    <header class="header">
-      <div class="logo">
-        <div class="logo-icon" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round">
-            <path d="M9 18V5l12-2v13"/>
-            <circle cx="6" cy="18" r="3"/>
-            <circle cx="18" cy="16" r="3"/>
-          </svg>
-        </div>
-        <span class="logo-text">EXCLUSIVE MUSIC BOT</span>
-      </div>
-      <div class="header-actions">
-        <button class="icon-btn" id="theme-toggle" aria-label="Переключить тему">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-        <button class="icon-btn" id="queue-btn" aria-label="Открыть очередь">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18H5"/><path d="M21 6H5"/><path d="M21 12H5"/><circle cx="21" cy="18" r="3"/><path d="M18 17v2l1.5 1"/></svg>
-        </button>
-      </div>
-    </header>
 
-    <!-- SEARCH -->
-    <div class="search-wrap">
-      <div class="search-box">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input id="search-input" type="search" placeholder="Поиск треков, артистов..." autocomplete="off" />
-        <button class="search-clear" id="search-clear" aria-label="Очистить">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- TABS -->
-    <div class="tabs" role="tablist">
-      <button class="tab-btn active" data-tab="all" role="tab">Все треки</button>
-      <button class="tab-btn" data-tab="liked" role="tab">Любимые</button>
-      <button class="tab-btn" data-tab="recent" role="tab">Недавние</button>
-    </div>
-
-    <!-- TRACK LIST -->
-    <div class="scroll-area" id="scroll-area">
-      <!-- Genre chips -->
-      <div class="section-label">Жанры</div>
-      <div class="genre-row" id="genre-row">
-        <button class="genre-chip active" data-genre="all">Все</button>
-        <button class="genre-chip" data-genre="remix">🔥 Remixes</button>
-        <button class="genre-chip" data-genre="love">❤️ Love</button>
-        <button class="genre-chip" data-genre="winter">❄️ Winter</button>
-        <button class="genre-chip" data-genre="hiphop">🎤 Hip-Hop</button>
-        <button class="genre-chip" data-genre="electronic">⚡ Electronic</button>
-        <button class="genre-chip" data-genre="city">🏙️ City</button>
-      </div>
-
-      <div class="section-label" id="list-label">Треки</div>
-      <div class="track-list" id="track-list" role="list"></div>
-      <div class="empty-state" id="empty-state" style="display:none;">
-        <div class="empty-icon">🎵</div>
-        <div class="empty-title">Ничего не найдено</div>
-        <div class="empty-desc">Попробуй изменить запрос или выбрать другой жанр</div>
-      </div>
-    </div>
-
-    <!-- PLAYER -->
-    <div class="player-wrap hidden" id="player-wrap">
-      <!-- Visualizer -->
-      <div class="visualizer" id="visualizer"></div>
-
-      <!-- Mini player info -->
-      <div class="mini-player" id="mini-player" role="button" tabindex="0" aria-label="Текущий трек">
-        <div class="mini-cover" id="mini-cover">🎵</div>
-        <div class="mini-info">
-          <div class="mini-title" id="mini-title">—</div>
-          <div class="mini-artist" id="mini-artist">Выберите трек</div>
-        </div>
-        <button class="track-like" id="mini-like" aria-label="Нравится">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </button>
-      </div>
-
-      <!-- Progress bar -->
-      <div class="progress-mini" id="progress-bar" style="cursor:pointer;" aria-label="Прогресс">
-        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-      </div>
-
-      <!-- Controls -->
-      <div class="controls" style="margin-top: var(--space-3);">
-        <button class="ctrl-btn" id="shuffle-btn" aria-label="Перемешать" title="Перемешать">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
-        </button>
-        <button class="ctrl-btn" id="prev-btn" aria-label="Предыдущий трек">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-        </button>
-        <button class="ctrl-btn primary" id="play-btn" aria-label="Воспроизвести / Пауза">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" id="play-icon"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <button class="ctrl-btn" id="next-btn" aria-label="Следующий трек">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
-        </button>
-        <button class="ctrl-btn" id="repeat-btn" aria-label="Повтор" title="Повтор">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-        </button>
-      </div>
+<div id="app">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="14" r="13" fill="#FFCC00" opacity="0.15"/>
+        <path d="M10 8v10M14 6v12M18 9v8" stroke="#FFCC00" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span>EXCLUSIVE MUSIC BOT</span>
     </div>
   </div>
 
-  <!-- QUEUE PANEL -->
-  <div class="queue-panel" id="queue-panel" role="dialog" aria-modal="true" aria-label="Очередь воспроизведения">
-    <div class="queue-backdrop" id="queue-backdrop"></div>
-    <div class="queue-sheet">
-      <div class="queue-handle" aria-hidden="true"></div>
-      <div class="queue-header">
-        <div class="queue-title">Очередь</div>
-        <div class="queue-count" id="queue-count">0 треков</div>
+  <!-- BLOB BACKGROUND -->
+  <div class="blob-container" id="blob-container">
+    <div class="blob" id="blob-main"></div>
+    <div class="blob-inner" id="blob-inner"></div>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area" id="scroll-area">
+
+    <!-- TRACKS TAB -->
+    <div class="tab-content active" id="tab-tracks">
+      <div class="genre-pills" id="genre-pills">
+        <div class="genre-pill active" data-genre="all">Все</div>
+        <div class="genre-pill" data-genre="remix">Remix</div>
+        <div class="genre-pill" data-genre="love">Love</div>
+        <div class="genre-pill" data-genre="winter">Winter</div>
+        <div class="genre-pill" data-genre="hiphop">Hip-Hop</div>
+        <div class="genre-pill" data-genre="electronic">Electronic</div>
+        <div class="genre-pill" data-genre="city">City</div>
       </div>
-      <div class="queue-list" id="queue-list"></div>
+      <div class="section-header">
+        <span class="section-title">Треки</span>
+        <span class="section-count" id="tracks-count"></span>
+      </div>
+      <div class="track-list" id="tracks-list"></div>
+    </div>
+
+    <!-- SEARCH TAB -->
+    <div class="tab-content" id="tab-search">
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" type="text" placeholder="Поиск по трекам и артистам..." id="search-input" autocomplete="off" spellcheck="false">
+          <button class="search-clear" id="search-clear">✕</button>
+        </div>
+      </div>
+      <div class="section-header">
+        <span class="section-title" id="search-title">Все треки</span>
+        <span class="section-count" id="search-count"></span>
+      </div>
+      <div class="track-list" id="search-list"></div>
+      <div class="empty-state" id="search-empty" style="display:none">
+        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-title">Ничего не найдено</div>
+        <div class="empty-state-text">Попробуй другой запрос</div>
+      </div>
+    </div>
+
+    <!-- FAVORITES TAB -->
+    <div class="tab-content" id="tab-favorites">
+      <div class="section-header">
+        <span class="section-title">Любимые</span>
+        <span class="section-count" id="fav-count"></span>
+      </div>
+      <div class="track-list" id="fav-list"></div>
+      <div class="empty-state" id="fav-empty" style="display:none">
+        <div class="empty-state-icon">❤️</div>
+        <div class="empty-state-title">Пока пусто</div>
+        <div class="empty-state-text">Нажимай ❤️ на треках,<br>чтобы добавить их сюда</div>
+      </div>
+    </div>
+
+  </div><!-- /scroll-area -->
+</div><!-- /app -->
+
+<!-- MINI PLAYER -->
+<div id="mini-player">
+  <div class="mini-cover" id="mini-cover">🎵</div>
+  <div class="mini-info">
+    <div class="mini-title" id="mini-title">—</div>
+    <div class="mini-artist" id="mini-artist">—</div>
+  </div>
+  <div class="mini-controls">
+    <button class="mini-btn" id="mini-like-btn" title="Лайк">🤍</button>
+    <button class="mini-btn" id="mini-play-btn" title="Пауза/Воспроизведение">▶️</button>
+  </div>
+  <div class="mini-progress">
+    <div class="mini-progress-fill" id="mini-progress-fill"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav id="bottom-nav">
+  <button class="nav-btn active" id="nav-tracks" data-tab="tracks">
+    <span class="nav-icon">🎵</span>
+    <span>Треки</span>
+  </button>
+  <button class="nav-btn" id="nav-search" data-tab="search">
+    <span class="nav-icon">🔍</span>
+    <span>Поиск</span>
+  </button>
+  <button class="nav-btn" id="nav-favorites" data-tab="favorites">
+    <span class="nav-icon">❤️</span>
+    <span>Любимые</span>
+  </button>
+</nav>
+
+<!-- FULL PLAYER -->
+<div id="full-player">
+  <div class="fp-bg">
+    <div class="fp-blob1" id="fp-blob1"></div>
+    <div class="fp-blob2" id="fp-blob2"></div>
+  </div>
+
+  <div class="fp-header">
+    <button class="fp-close-btn" id="fp-close">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1L7 13M1 7H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" transform="rotate(45 7 7)"/>
+      </svg>
+    </button>
+    <span class="fp-title-small">Сейчас играет</span>
+    <button class="fp-menu-btn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="fp-artwork-area">
+    <div class="fp-artwork" id="fp-artwork">🎵</div>
+  </div>
+
+  <div class="fp-info">
+    <div class="fp-track-title" id="fp-title">—</div>
+    <div class="fp-track-artist" id="fp-artist">—</div>
+  </div>
+
+  <div class="fp-actions-row">
+    <button class="fp-action-btn" id="fp-like-btn" title="Лайк">🤍</button>
+    <div style="flex:1"></div>
+    <button class="fp-action-btn" id="fp-shuffle-btn" title="Перемешать">🔀</button>
+    <button class="fp-action-btn" id="fp-repeat-btn" title="Повтор">🔁</button>
+  </div>
+
+  <div class="fp-progress-area">
+    <div class="progress-bar-track" id="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-bar-fill"></div>
+    </div>
+    <div class="progress-times">
+      <span id="time-current">0:00</span>
+      <span id="time-total">0:00</span>
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="fp-controls">
+    <button class="ctrl-btn" id="ctrl-prev" title="Предыдущий">⏮</button>
+    <button class="ctrl-play" id="ctrl-play">▶</button>
+    <button class="ctrl-btn" id="ctrl-next" title="Следующий">⏭</button>
+  </div>
+</div>
 
-  <script>
-    // ===== PROXY CONFIG =====
-    // После деплоя на Railway замените на реальный адрес, например:
-    // window.PROXY_URL = 'https://exclusive-music-bot.up.railway.app';
-    window.PROXY_URL = 'https://web-production-6791f.up.railway.app';
+<!-- TOAST -->
+<div id="toast"></div>
 
-    // ===== DATA =====
-    const TRACKS = [
+<script>
+// ========== CONSTANTS ==========
+const PROXY_URL = 'https://web-production-6791f.up.railway.app';
+
+const GENRE_COLORS = {
+  remix:      '#FF6B35',
+  love:       '#E91E8C',
+  winter:     '#4FC3F7',
+  hiphop:     '#7C4DFF',
+  electronic: '#00E676',
+  city:       '#FFD740',
+  default:    '#FFCC00'
+};
+
+// ========== TRACKS DATA ==========
+const TRACKS = [
       { id:1, msg_id:1, title:"Не лей (exclusive music remix)", artist:"Bake", genre:"remix", duration:235, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQADHWnbpnHkhd9QyNxWORqFL4taLfdQAAL-VgACoh6ZSd-Y1aP_mW60OwQ", plays:213 },
       { id:2, msg_id:2, title:"Не стали другими (exclusive music remix)", artist:"Маракеш", genre:"remix", duration:140, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQADHmnbplWaNnk3bPBoN7-LDjkQZSvUAAJiWwACoh6ZSZWBzjmBeu3KOwQ", plays:226 },
       { id:3, msg_id:3, title:"Хулиганка (exclusive music remix)", artist:"XOLIDAYBOY", genre:"hiphop", duration:203, emoji:"🎤", file_id:"CQACAgIAAx0Ca5esqQADH2nbpnPFFD3U-2dfPbRklAGE-coMAAKOWwACoh6ZSYrimm7v8P9YOwQ", plays:239 },
@@ -1145,7 +1180,7 @@
       { id:117, msg_id:124, title:"Если - устал exclusive music remix", artist:"Мари Краймбрери, Ayur Tsyrenov", genre:"remix", duration:235, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQADz2nbp08SpckvMKlWU8Pdg3bdkZn3AAL2XgACTTVwS9uNoSyH6WDdOwQ", plays:1721 },
       { id:118, msg_id:125, title:"Сопрано exclusive music remix", artist:"Ани Лорак, Мот, Slava", genre:"remix", duration:180, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQAD0Wnbp1D5sKfvfvECd1UWPeCM9wfFAAJyYAACTTVwS5Nb_HUseL4EOwQ", plays:1734 },
       { id:119, msg_id:126, title:"Зима холода exclusive music remix", artist:"Artik Asti, Михаил Шуфутинский,JODLEX", genre:"winter", duration:241, emoji:"❄️", file_id:"CQACAgIAAx0Ca5esqQAD02nbp1I1YgVs8MHdJgQlNobJyFMZAAITZwACail5S8JooBFsvg2nOwQ", plays:1747 },
-      { id:120, msg_id:128, title:"Айдахар exclusive music remix", artist:"Ирина Кайратовна, Dirty", genre:"remix", duration:192, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQAD1mnbp1ThjnvLUeAgnOPt6yTrYTyiAALnaAACail5S9QJRIC3yaXKOwQ", plays:1760 },
+      { id:120, msg_id:128, title:"Айдахар exclusive music remix", artist:"Ирина Кайратовна, Dirty", genre:"remix", duration:192, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQAD1mnbp1ThjnvLUeAgnOPt6yTrYTyiAALnaAACail5S9QJRIC3yaXKOwQ", plays:1760 },
       { id:121, msg_id:129, title:"Белая Зима метёт  exclusive music remix", artist:"София Ротару, DNM", genre:"winter", duration:299, emoji:"❄️", file_id:"CQACAgIAAx0Ca5esqQAD2Wnbp1afNSUQeevFwV3HJbRuQG3jAAK5agACail5S1tC25LGrA8VOwQ", plays:1773 },
       { id:122, msg_id:130, title:"Царица exclusive music remix", artist:"Anna Asti, Ayur Tsyrenov", genre:"remix", duration:292, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQAD2mnbp1bGe7Ihraw1gpOcJD6l5r7-AALhagACail5SyWIbs6CB-AzOwQ", plays:1786 },
       { id:123, msg_id:131, title:"Стерва exclusive music remix", artist:"Леша Свик, RedCraft", genre:"remix", duration:162, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQAD22nbp1dpWGyyB6xMmM8TUa2lCnhOAAL8awACail5S4lv6WlNWAtYOwQ", plays:1799 },
@@ -1196,636 +1231,514 @@
       { id:168, msg_id:190, title:"Life Is a Party exclusive music remix", artist:"MAGES", genre:"remix", duration:170, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQACAVhp26erd-99fqocsuEIiwMN15m_ggACx4AAAp9UIEizPgzob-1zUDsE", plays:2384 },
       { id:169, msg_id:191, title:"The Next Episode exclusive music remix", artist:"VOLB3X", genre:"remix", duration:240, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQACAVlp26eOw9axUwtBHuOByEBlQfkwNgACbH8AAoN7IUjWjGK4sh39oTsE", plays:2397 },
       { id:170, msg_id:192, title:"Maria, Maria exclusive music remix", artist:"Mari Ferrari, Miss Mary", genre:"remix", duration:210, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQACAVpp26es9J44ov0EiAYtNnqBH-VKHwAC838AApsMAUifnzD62rmJvjsE", plays:2410 }
-    ];
+];
 
-    // ===== STATE =====
-    const state = {
-      currentIndex: -1,
-      isPlaying: false,
-      isShuffled: false,
-      repeatMode: 0, // 0=off, 1=all, 2=one
-      likedIds: new Set([4, 7, 15]),
-      recentIds: [15, 9, 3, 7],
-      currentTab: 'all',
-      currentGenre: 'all',
-      searchQuery: '',
-      progress: 0,
-      progressTimer: null,
-      queue: [],
-      filteredTracks: [],
-      toastTimer: null,
-    };
+// ========== STATE ==========
+let currentTrackId = null;
+let isPlaying = false;
+let isShuffle = false;
+let isRepeat = false;
+let currentTab = 'tracks';
+let currentGenreFilter = 'all';
+let queue = [...TRACKS];
+let searchQuery = '';
+let favorites = new Set(JSON.parse(localStorage.getItem('em_favorites') || '[]'));
 
-    // ===== DOM =====
-    const $ = id => document.getElementById(id);
-    const trackList = $('track-list');
-    const emptyState = $('empty-state');
-    const playerWrap = $('player-wrap');
-    const miniTitle = $('mini-title');
-    const miniArtist = $('mini-artist');
-    const miniCover = $('mini-cover');
-    const miniLike = $('mini-like');
-    const progressFill = $('progress-fill');
-    const playIcon = $('play-icon');
-    const queuePanel = $('queue-panel');
-    const queueList = $('queue-list');
-    const queueCount = $('queue-count');
-    const visualizer = $('visualizer');
-    const toast = $('toast');
-    const listLabel = $('list-label');
+// ========== AUDIO ==========
+const audioEl = new Audio();
+audioEl.crossOrigin = 'anonymous';
 
-    // ===== VISUALIZER =====
-    const VIZ_BARS = 28;
-    const vizBars = [];
-    for (let i = 0; i < VIZ_BARS; i++) {
-      const b = document.createElement('div');
-      b.className = 'viz-bar';
-      const h = Math.floor(Math.random() * 26) + 6;
-      const d = (Math.random() * 0.6 + 0.5).toFixed(2);
-      b.style.setProperty('--h', h + 'px');
-      b.style.setProperty('--d', d + 's');
-      b.style.animationDelay = (Math.random() * 0.3) + 's';
-      visualizer.appendChild(b);
-      vizBars.push(b);
+// ========== DOM REFS ==========
+const miniPlayer = document.getElementById('mini-player');
+const miniCover = document.getElementById('mini-cover');
+const miniTitle = document.getElementById('mini-title');
+const miniArtist = document.getElementById('mini-artist');
+const miniPlayBtn = document.getElementById('mini-play-btn');
+const miniLikeBtn = document.getElementById('mini-like-btn');
+const miniProgressFill = document.getElementById('mini-progress-fill');
+
+const fullPlayer = document.getElementById('full-player');
+const fpArtwork = document.getElementById('fp-artwork');
+const fpTitle = document.getElementById('fp-title');
+const fpArtist = document.getElementById('fp-artist');
+const fpLikeBtn = document.getElementById('fp-like-btn');
+const fpShuffleBtn = document.getElementById('fp-shuffle-btn');
+const fpRepeatBtn = document.getElementById('fp-repeat-btn');
+const ctrlPlay = document.getElementById('ctrl-play');
+const progressBarTrack = document.getElementById('progress-bar-track');
+const progressBarFill = document.getElementById('progress-bar-fill');
+const timeCurrent = document.getElementById('time-current');
+const timeTotal = document.getElementById('time-total');
+
+const blobContainer = document.getElementById('blob-container');
+const blobMain = document.getElementById('blob-main');
+const blobInner = document.getElementById('blob-inner');
+const fpBlob1 = document.getElementById('fp-blob1');
+const fpBlob2 = document.getElementById('fp-blob2');
+
+// ========== HELPERS ==========
+function formatTime(sec) {
+  if (!sec || isNaN(sec)) return '0:00';
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function getColor(genre) {
+  return GENRE_COLORS[genre] || GENRE_COLORS.default;
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function saveFavorites() {
+  localStorage.setItem('em_favorites', JSON.stringify([...favorites]));
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ========== TRACK CARD ==========
+function createTrackItem(track) {
+  const color = getColor(track.genre);
+  const isLiked = favorites.has(track.id);
+  const isCurrentlyPlaying = currentTrackId === track.id;
+
+  const el = document.createElement('div');
+  el.className = 'track-item' + (isCurrentlyPlaying ? ' playing' : '');
+  el.dataset.id = track.id;
+  el.innerHTML = `
+    <div class="track-cover ${isCurrentlyPlaying && isPlaying ? 'spinning' : ''}" style="background: linear-gradient(135deg, ${color}33, ${color}66)">
+      <span>${track.emoji}</span>
+      <div class="playing-indicator">
+        <div class="playing-bars">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+    <div class="track-info">
+      <div class="track-title">${track.title}</div>
+      <div class="track-artist">${track.artist}</div>
+    </div>
+    <div class="track-right">
+      <span class="track-duration">${formatTime(track.duration)}</span>
+      <button class="track-like-btn" data-id="${track.id}" aria-label="Лайк">
+        ${isLiked ? '❤️' : '🤍'}
+      </button>
+    </div>
+  `;
+
+  el.querySelector('.track-cover, .track-info, .track-duration').addEventListener('click', (e) => {
+    e.stopPropagation();
+    playTrack(track.id);
+    openFullPlayer();
+  });
+
+  el.addEventListener('click', (e) => {
+    if (!e.target.closest('.track-like-btn')) {
+      playTrack(track.id);
+      openFullPlayer();
     }
-
-    function setVizActive(on) {
-      vizBars.forEach(b => {
-        if (on) b.classList.add('active');
-        else b.classList.remove('active');
-      });
-    }
-
-    // ===== FILTER / RENDER =====
-    function getFilteredTracks() {
-      let tracks = TRACKS.slice();
-
-      if (state.currentTab === 'liked') {
-        tracks = tracks.filter(t => state.likedIds.has(t.id));
-      } else if (state.currentTab === 'recent') {
-        tracks = state.recentIds.map(id => TRACKS.find(t => t.id === id)).filter(Boolean);
-      }
-
-      if (state.currentGenre !== 'all') {
-        tracks = tracks.filter(t => t.genre === state.currentGenre);
-      }
-
-      if (state.searchQuery) {
-        const q = state.searchQuery.toLowerCase();
-        tracks = tracks.filter(t =>
-          t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q)
-        );
-      }
-
-      return tracks;
-    }
-
-    function formatDur(s) {
-      return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-    }
-
-    function renderTracks() {
-      state.filteredTracks = getFilteredTracks();
-      const tracks = state.filteredTracks;
-
-      // Label
-      const labels = { all: 'Все треки', liked: 'Любимые', recent: 'Недавние' };
-      listLabel.textContent = labels[state.currentTab] || 'Треки';
-
-      trackList.innerHTML = '';
-      if (tracks.length === 0) {
-        emptyState.style.display = 'flex';
-        return;
-      }
-      emptyState.style.display = 'none';
-
-      const currentTrack = state.currentIndex >= 0 ? state.queue[state.currentIndex] : null;
-
-      tracks.forEach((t, i) => {
-        const isPlaying = currentTrack && currentTrack.id === t.id && state.isPlaying;
-        const isCurrent = currentTrack && currentTrack.id === t.id;
-        const isLiked = state.likedIds.has(t.id);
-
-        const card = document.createElement('div');
-        card.className = `track-card${isCurrent ? (state.isPlaying ? ' playing' : ' paused') : ''}`;
-        card.style.animationDelay = (i * 0.04) + 's';
-        card.setAttribute('role', 'listitem');
-        card.setAttribute('data-id', t.id);
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('aria-label', `${t.title} — ${t.artist}`);
-
-        card.innerHTML = `
-          <div class="track-cover">
-            <div class="cover-art">${t.emoji}</div>
-            <div class="cover-bars" aria-hidden="true">
-              <div class="bar"></div><div class="bar"></div>
-              <div class="bar"></div><div class="bar"></div>
-            </div>
-          </div>
-          <div class="track-info">
-            <div class="track-title">${t.title}</div>
-            <div class="track-artist">${t.artist}</div>
-          </div>
-          <div class="track-meta">
-            <div class="track-duration">${formatDur(t.duration)}</div>
-            <button class="track-like${isLiked ? ' liked' : ''}" aria-label="${isLiked ? 'Убрать из любимых' : 'В любимые'}">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="${isLiked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            </button>
-          </div>
-        `;
-
-        card.addEventListener('click', (e) => {
-          if (e.target.closest('.track-like')) return;
-          playTrack(t);
-        });
-
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playTrack(t); }
-        });
-
-        card.querySelector('.track-like').addEventListener('click', (e) => {
-          e.stopPropagation();
-          toggleLike(t.id);
-        });
-
-        trackList.appendChild(card);
-      });
-    }
-
-    // ===== LIKE =====
-    function toggleLike(id) {
-      if (state.likedIds.has(id)) {
-        state.likedIds.delete(id);
-        showToast('Удалено из любимых');
-      } else {
-        state.likedIds.add(id);
-        showToast('❤️ Добавлено в любимые');
-      }
-      renderTracks();
-      updateMiniLike();
-    }
-
-    function updateMiniLike() {
-      if (state.currentIndex < 0) return;
-      const t = state.queue[state.currentIndex];
-      if (!t) return;
-      const liked = state.likedIds.has(t.id);
-      miniLike.className = 'track-like' + (liked ? ' liked' : '');
-      miniLike.querySelector('svg').setAttribute('fill', liked ? 'currentColor' : 'none');
-    }
-
-    // ===== PLAY =====
-    function buildQueue(startTrack) {
-      let pool = state.filteredTracks.length > 0 ? state.filteredTracks : TRACKS;
-      if (state.isShuffled) {
-        pool = [...pool].sort(() => Math.random() - 0.5);
-        // Move startTrack to front
-        const idx = pool.findIndex(t => t.id === startTrack.id);
-        if (idx > -1) { pool.splice(idx, 1); pool.unshift(startTrack); }
-      }
-      state.queue = pool;
-      state.currentIndex = pool.findIndex(t => t.id === startTrack.id);
-      if (state.currentIndex < 0) state.currentIndex = 0;
-    }
-
-    function playTrack(track) {
-      // Check if same track — toggle play/pause
-      const curTrack = state.currentIndex >= 0 ? state.queue[state.currentIndex] : null;
-      if (curTrack && curTrack.id === track.id) {
-        togglePlayPause();
-        return;
-      }
-
-      buildQueue(track);
-      startPlaying();
-
-      // Add to recent
-      state.recentIds = [track.id, ...state.recentIds.filter(id => id !== track.id)].slice(0, 10);
-    }
-
-    // ===== HTML5 AUDIO ENGINE =====
-    const audioEl = new Audio();
-    audioEl.preload = 'none';
-    audioEl.crossOrigin = 'anonymous';
-
-    audioEl.addEventListener('timeupdate', () => {
-      if (!audioEl.duration) return;
-      const pct = (audioEl.currentTime / audioEl.duration) * 100;
-      progressFill.style.width = pct + '%';
-      state.progress = audioEl.currentTime * 1000;
-    });
-
-    audioEl.addEventListener('ended', onTrackEnd);
-
-    audioEl.addEventListener('error', () => {
-      showToast('Ошибка — переключаю...');
-      setTimeout(onTrackEnd, 1500);
-    });
-
-    audioEl.addEventListener('waiting', () => showToast('⏳ Загрузка...'));
-
-    audioEl.addEventListener('playing', () => {
-      state.isPlaying = true;
-      updatePlayIcon();
-      miniCover.classList.add('spinning');
-      setVizActive(true);
-    });
-
-    audioEl.addEventListener('pause', () => {
-      miniCover.classList.remove('spinning');
-      setVizActive(false);
-    });
-
-    // Перемотка по полосе прогресса
-    const progressBar = document.querySelector('.progress-bar') || document.querySelector('.progress');
-    if (progressBar) {
-      progressBar.addEventListener('click', (e) => {
-        if (!audioEl.duration) return;
-        const rect = progressBar.getBoundingClientRect();
-        const pct  = (e.clientX - rect.left) / rect.width;
-        audioEl.currentTime = pct * audioEl.duration;
-      });
-    }
-
-    function startPlaying() {
-      const t = state.queue[state.currentIndex];
-      if (!t) return;
-
-      state.isPlaying = true;
-      state.progress  = 0;
-      clearInterval(state.progressTimer);
-
-      playerWrap.classList.remove('hidden');
-      miniTitle.textContent = t.title;
-      miniArtist.textContent = t.artist;
-      miniCover.textContent  = t.emoji;
-      miniCover.classList.add('spinning');
-      progressFill.style.width = '0%';
-
-      updatePlayIcon();
-      updateMiniLike();
-      setVizActive(true);
-      renderTracks();
-      renderQueue();
-
-      if (t.file_id && window.PROXY_URL) {
-        // Получаем прямую ссылку через прокси и воспроизводим
-        const audioUrl = window.PROXY_URL + '/audio/' + encodeURIComponent(t.file_id);
-        audioEl.src = audioUrl;
-        audioEl.load();
-        const playPromise = audioEl.play();
-        if (playPromise) {
-          playPromise.catch(err => {
-            console.warn('Autoplay blocked:', err);
-            showToast('▶️ Нажмите play ещё раз');
-            state.isPlaying = false;
-            updatePlayIcon();
-          });
-        }
-      } else {
-        // Fallback — симуляция
-        const totalMs = t.duration * 1000;
-        state.progressTimer = setInterval(() => {
-          if (!state.isPlaying) return;
-          state.progress = Math.min(state.progress + 500, totalMs);
-          progressFill.style.width = (state.progress / totalMs * 100) + '%';
-          if (state.progress >= totalMs) {
-            clearInterval(state.progressTimer);
-            onTrackEnd();
-          }
-        }, 500);
-      }
-    }
-
-    function onTrackEnd() {
-      if (state.repeatMode === 2) {
-        audioEl.currentTime = 0;
-        audioEl.play().catch(()=>{});
-      } else if (state.currentIndex < state.queue.length - 1) {
-        state.currentIndex++;
-        startPlaying();
-      } else if (state.repeatMode === 1) {
-        state.currentIndex = 0;
-        startPlaying();
-      } else {
-        state.isPlaying = false;
-        miniCover.classList.remove('spinning');
-        setVizActive(false);
-        updatePlayIcon();
-        renderTracks();
-      }
-    }
-
-    function togglePlayPause() {
-      if (state.currentIndex < 0) return;
-      if (audioEl.src && window.PROXY_URL) {
-        if (audioEl.paused) {
-          audioEl.play().catch(e => console.warn(e));
-          state.isPlaying = true;
-        } else {
-          audioEl.pause();
-          state.isPlaying = false;
-        }
-      } else {
-        state.isPlaying = !state.isPlaying;
-      }
-      updatePlayIcon();
-      setVizActive(state.isPlaying);
-      if (state.isPlaying) miniCover.classList.add('spinning');
-      else miniCover.classList.remove('spinning');
-      renderTracks();
-    }
-
-    function updatePlayIcon() {
-      if (state.isPlaying) {
-        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        $('play-btn').setAttribute('aria-label', 'Пауза');
-      } else {
-        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-        $('play-btn').setAttribute('aria-label', 'Воспроизвести');
-      }
-    }
-
-    // ===== CONTROLS =====
-    $('play-btn').addEventListener('click', togglePlayPause);
-
-    $('prev-btn').addEventListener('click', () => {
-      if (state.currentIndex > 0) {
-        state.currentIndex--;
-        state.progress = 0;
-        startPlaying();
-      } else if (state.repeatMode === 1) {
-        state.currentIndex = state.queue.length - 1;
-        startPlaying();
-      } else {
-        state.progress = 0;
-        progressFill.style.width = '0%';
-      }
-    });
-
-    $('next-btn').addEventListener('click', () => {
-      if (state.currentIndex < state.queue.length - 1) {
-        state.currentIndex++;
-        startPlaying();
-      } else if (state.repeatMode === 1) {
-        state.currentIndex = 0;
-        startPlaying();
-      } else {
-        showToast('Конец очереди');
-      }
-    });
-
-    $('shuffle-btn').addEventListener('click', () => {
-      state.isShuffled = !state.isShuffled;
-      $('shuffle-btn').classList.toggle('active', state.isShuffled);
-      if (state.currentIndex >= 0 && state.queue[state.currentIndex]) {
-        buildQueue(state.queue[state.currentIndex]);
-        renderQueue();
-      }
-      showToast(state.isShuffled ? '🔀 Перемешать: вкл' : 'Перемешать: выкл');
-    });
-
-    $('repeat-btn').addEventListener('click', () => {
-      state.repeatMode = (state.repeatMode + 1) % 3;
-      const btn = $('repeat-btn');
-      const modes = ['Повтор: выкл', '🔁 Повтор списка', '🔂 Повтор трека'];
-      btn.classList.toggle('active', state.repeatMode > 0);
-      if (state.repeatMode === 2) {
-        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/><text x="10" y="15" fill="currentColor" font-size="7" stroke="none">1</text></svg>`;
-      } else {
-        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`;
-      }
-      showToast(modes[state.repeatMode]);
-    });
-
-    // Progress click
-    $('progress-bar').addEventListener('click', (e) => {
-      if (state.currentIndex < 0) return;
-      const t = state.queue[state.currentIndex];
-      const rect = e.currentTarget.getBoundingClientRect();
-      const pct = (e.clientX - rect.left) / rect.width;
-      state.progress = Math.round(pct * t.duration * 1000);
-      progressFill.style.width = (pct * 100) + '%';
-    });
-
-    // Mini like
-    miniLike.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (state.currentIndex < 0) return;
-      toggleLike(state.queue[state.currentIndex].id);
-    });
-
-    // ===== QUEUE PANEL =====
-    function renderQueue() {
-      queueList.innerHTML = '';
-      const cur = state.queue[state.currentIndex];
-      queueCount.textContent = `${state.queue.length} треков`;
-
-      state.queue.forEach((t, i) => {
-        const isCur = cur && t.id === cur.id;
-        const item = document.createElement('div');
-        item.className = 'queue-item' + (isCur ? ' current' : '');
-        item.innerHTML = `
-          <div class="queue-num">${isCur ? '▶' : i + 1}</div>
-          <div class="queue-cover">${t.emoji}</div>
-          <div class="queue-info">
-            <div class="queue-name">${t.title}</div>
-            <div class="queue-artist-text">${t.artist}</div>
-          </div>
-          <div class="queue-dur">${formatDur(t.duration)}</div>
-        `;
-        item.addEventListener('click', () => {
-          state.currentIndex = i;
-          startPlaying();
-          closeQueue();
-        });
-        queueList.appendChild(item);
-      });
-
-      // Scroll to current
-      if (cur) {
-        setTimeout(() => {
-          const curEl = queueList.querySelector('.current');
-          if (curEl) curEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
-      }
-    }
-
-    $('queue-btn').addEventListener('click', () => {
-      if (state.queue.length === 0) {
-        buildQueue(TRACKS[0]);
-        renderQueue();
-      }
-      queuePanel.classList.add('open');
-    });
-
-    function closeQueue() { queuePanel.classList.remove('open'); }
-    $('queue-backdrop').addEventListener('click', closeQueue);
-
-    // Swipe down to close queue
-    let queueTouchY = 0;
-    const queueSheet = queuePanel.querySelector('.queue-sheet');
-    queueSheet.addEventListener('touchstart', e => { queueTouchY = e.touches[0].clientY; }, { passive: true });
-    queueSheet.addEventListener('touchend', e => {
-      const dy = e.changedTouches[0].clientY - queueTouchY;
-      if (dy > 60) closeQueue();
-    }, { passive: true });
-
-    // ===== SEARCH =====
-    const searchInput = $('search-input');
-    const searchClear = $('search-clear');
-
-    searchInput.addEventListener('input', () => {
-      state.searchQuery = searchInput.value.trim();
-      searchClear.classList.toggle('visible', state.searchQuery.length > 0);
-      renderTracks();
-    });
-
-    searchClear.addEventListener('click', () => {
-      searchInput.value = '';
-      state.searchQuery = '';
-      searchClear.classList.remove('visible');
-      searchInput.focus();
-      renderTracks();
-    });
-
-    // ===== TABS =====
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-        state.currentTab = btn.dataset.tab;
-        renderTracks();
-      });
-    });
-
-    // ===== GENRE CHIPS =====
-    $('genre-row').addEventListener('click', e => {
-      const chip = e.target.closest('.genre-chip');
-      if (!chip) return;
-      document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      state.currentGenre = chip.dataset.genre;
-      renderTracks();
-    });
-
-    // ===== THEME TOGGLE =====
-    const themeToggle = $('theme-toggle');
-    let currentTheme = 'dark';
-
-    themeToggle.addEventListener('click', () => {
-      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', currentTheme);
-      themeToggle.innerHTML = currentTheme === 'dark'
-        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`
-        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`;
-    });
-
-    // ===== TOAST =====
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.add('visible');
-      clearTimeout(state.toastTimer);
-      state.toastTimer = setTimeout(() => toast.classList.remove('visible'), 2200);
-    }
-
-    // ===== KEYBOARD =====
-    document.addEventListener('keydown', e => {
-      if (e.target.tagName === 'INPUT') return;
-      if (e.code === 'Space') { e.preventDefault(); togglePlayPause(); }
-      if (e.code === 'ArrowRight') $('next-btn').click();
-      if (e.code === 'ArrowLeft') $('prev-btn').click();
-    });
-
-    // ===== TELEGRAM WEBAPP INTEGRATION =====
-    const tg = window.Telegram?.WebApp;
-
-    if (tg) {
-      // Сообщаем Telegram, что WebApp готов
-      tg.ready();
-
-      // Раскрываем на весь экран
-      tg.expand();
-
-      // Применяем тему Telegram
-      const tgTheme = tg.colorScheme; // 'dark' или 'light'
-      if (tgTheme) {
-        document.documentElement.setAttribute('data-theme', tgTheme);
-        currentTheme = tgTheme;
-      }
-
-      // Настраиваем кнопку "Назад" в Telegram
-      tg.BackButton.onClick(() => {
-        if (queuePanel.classList.contains('open')) {
-          closeQueue();
-        } else {
-          tg.close();
-        }
-      });
-
-
-      // Haptic feedback при взаимодействии
-      if (tg.HapticFeedback) {
-        const origPlayTrack = playTrack;
-        playTrack = function(track) {
-          tg.HapticFeedback.impactOccurred('light');
-          origPlayTrack(track);
-        };
-
-        const origToggleLike = toggleLike;
-        toggleLike = function(id) {
-          tg.HapticFeedback.notificationOccurred('success');
-          origToggleLike(id);
-        };
-      }
-
-      // Функция отправки данных боту
-      window.sendToBot = function(action, data) {
-        try {
-          const payload = JSON.stringify({ action, ...data });
-          tg.sendData(payload);
-        } catch (e) {
-          console.warn('sendData error:', e);
-        }
-      };
-
-      // Показываем BackButton когда открыта очередь
-      const origOpenQueue = () => {
-        queuePanel.classList.add('open');
-        tg.BackButton.show();
-      };
-      $('queue-btn').removeEventListener('click', () => {});
-      $('queue-btn').addEventListener('click', () => {
-        if (state.queue.length === 0) {
-          buildQueue(TRACKS[0]);
-          renderQueue();
-        }
-        queuePanel.classList.add('open');
-        tg.BackButton.show();
-      });
-
-      const origCloseQueue = closeQueue;
-      closeQueue = function() {
-        queuePanel.classList.remove('open');
-        tg.BackButton.hide();
-      };
-
-      console.log('EXCLUSIVE MUSIC BOT: Telegram WebApp SDK подключен', tg.initData ? '(из бота)' : '(вне бота)');
-    }
-
-    // ===== INIT =====
-    renderTracks();
-
-    // Auto-play first track after 1.5s for demo
-    setTimeout(() => {
-      if (state.currentIndex < 0) {
-        playTrack(TRACKS[0]);
-      }
-    }, 1500);
-  </script>
+  });
+
+  el.querySelector('.track-like-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleLike(track.id);
+  });
+
+  return el;
+}
+
+// ========== RENDER LISTS ==========
+function renderTracksList() {
+  const list = document.getElementById('tracks-list');
+  let filtered = currentGenreFilter === 'all' ? TRACKS : TRACKS.filter(t => t.genre === currentGenreFilter);
+  list.innerHTML = '';
+  filtered.forEach(t => list.appendChild(createTrackItem(t)));
+  document.getElementById('tracks-count').textContent = filtered.length + ' треков';
+}
+
+function renderSearchList() {
+  const q = searchQuery.toLowerCase().trim();
+  const list = document.getElementById('search-list');
+  const empty = document.getElementById('search-empty');
+  const title = document.getElementById('search-title');
+  const count = document.getElementById('search-count');
+  const clear = document.getElementById('search-clear');
+
+  let results = q
+    ? TRACKS.filter(t => t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q))
+    : TRACKS;
+
+  list.innerHTML = '';
+  if (q) {
+    title.textContent = `Результаты: «${q}»`;
+    clear.style.display = 'flex';
+  } else {
+    title.textContent = 'Все треки';
+    clear.style.display = 'none';
+  }
+
+  if (results.length === 0) {
+    empty.style.display = 'block';
+    list.style.display = 'none';
+    count.textContent = '';
+  } else {
+    empty.style.display = 'none';
+    list.style.display = 'block';
+    count.textContent = results.length + ' треков';
+    results.forEach(t => list.appendChild(createTrackItem(t)));
+  }
+}
+
+function renderFavoritesList() {
+  const list = document.getElementById('fav-list');
+  const empty = document.getElementById('fav-empty');
+  const count = document.getElementById('fav-count');
+  const favTracks = TRACKS.filter(t => favorites.has(t.id));
+  list.innerHTML = '';
+  if (favTracks.length === 0) {
+    empty.style.display = 'block';
+    list.style.display = 'none';
+    count.textContent = '';
+  } else {
+    empty.style.display = 'none';
+    list.style.display = 'block';
+    count.textContent = favTracks.length + ' треков';
+    favTracks.forEach(t => list.appendChild(createTrackItem(t)));
+  }
+}
+
+function renderAll() {
+  renderTracksList();
+  renderSearchList();
+  renderFavoritesList();
+}
+
+// ========== PLAY LOGIC ==========
+function playTrack(trackId) {
+  const track = TRACKS.find(t => t.id === trackId);
+  if (!track) return;
+
+  const wasPlaying = currentTrackId === trackId && isPlaying;
+  if (wasPlaying) return;
+
+  currentTrackId = trackId;
+  isPlaying = false;
+
+  // Set blob color
+  const color = getColor(track.genre);
+  updateBlobColor(color);
+
+  // Update mini player
+  miniPlayer.classList.add('visible');
+  miniTitle.textContent = track.title;
+  miniArtist.textContent = track.artist;
+  miniCover.textContent = track.emoji;
+  miniCover.style.background = `linear-gradient(135deg, ${color}40, ${color}80)`;
+  miniCover.style.borderRadius = '10px';
+  updateLikeBtn(track.id);
+
+  // Update full player
+  fpArtwork.textContent = track.emoji;
+  fpArtwork.style.background = `radial-gradient(circle at 40% 35%, ${color}88, ${color}33)`;
+  fpArtwork.style.boxShadow = `0 20px 60px ${color}44`;
+  fpTitle.textContent = track.title;
+  fpArtist.textContent = track.artist;
+  updateLikeBtn(track.id);
+
+  // Load audio
+  audioEl.src = PROXY_URL + '/audio/' + encodeURIComponent(track.file_id);
+  audioEl.load();
+  audioEl.play().then(() => {
+    isPlaying = true;
+    updatePlayState();
+    updateAllCards();
+  }).catch(err => {
+    console.error('Audio play error:', err);
+    showToast('Не удалось загрузить трек');
+  });
+
+  // Show blob on main screen
+  blobContainer.classList.add('visible');
+  updateAllCards();
+}
+
+function togglePlayPause() {
+  if (!currentTrackId) return;
+  if (isPlaying) {
+    audioEl.pause();
+    isPlaying = false;
+  } else {
+    audioEl.play().then(() => { isPlaying = true; updatePlayState(); }).catch(() => {});
+  }
+  updatePlayState();
+  updateAllCards();
+}
+
+function playNext() {
+  if (!currentTrackId) return;
+  const list = getPlayQueue();
+  const idx = list.findIndex(t => t.id === currentTrackId);
+  const next = list[(idx + 1) % list.length];
+  if (next) playTrack(next.id);
+}
+
+function playPrev() {
+  if (!currentTrackId) return;
+  if (audioEl.currentTime > 3) {
+    audioEl.currentTime = 0;
+    return;
+  }
+  const list = getPlayQueue();
+  const idx = list.findIndex(t => t.id === currentTrackId);
+  const prev = list[(idx - 1 + list.length) % list.length];
+  if (prev) playTrack(prev.id);
+}
+
+function getPlayQueue() {
+  if (isShuffle) {
+    return [...queue].sort(() => Math.random() - 0.5);
+  }
+  return TRACKS;
+}
+
+function updatePlayState() {
+  // Mini player
+  miniPlayBtn.textContent = isPlaying ? '⏸' : '▶️';
+  miniCover.classList.toggle('spinning', isPlaying);
+
+  // Full player
+  ctrlPlay.textContent = isPlaying ? '⏸' : '▶';
+  ctrlPlay.classList.toggle('playing', isPlaying);
+  ctrlPlay.classList.toggle('paused', !isPlaying);
+  fpArtwork.classList.toggle('spinning', isPlaying);
+}
+
+function updateAllCards() {
+  // Update track items in all lists
+  document.querySelectorAll('.track-item').forEach(item => {
+    const id = parseInt(item.dataset.id);
+    const isActive = id === currentTrackId;
+    item.classList.toggle('playing', isActive);
+    const cover = item.querySelector('.track-cover');
+    if (cover) cover.classList.toggle('spinning', isActive && isPlaying);
+  });
+}
+
+function updateLikeBtn(trackId) {
+  const liked = favorites.has(trackId);
+  if (miniLikeBtn) miniLikeBtn.textContent = liked ? '❤️' : '🤍';
+  if (fpLikeBtn) fpLikeBtn.textContent = liked ? '❤️' : '🤍';
+  if (fpLikeBtn) fpLikeBtn.classList.toggle('active', liked);
+}
+
+function toggleLike(trackId) {
+  if (favorites.has(trackId)) {
+    favorites.delete(trackId);
+    showToast('Удалено из любимых');
+  } else {
+    favorites.add(trackId);
+    showToast('Добавлено в любимые ❤️');
+  }
+  saveFavorites();
+  updateLikeBtn(trackId);
+  renderFavoritesList();
+  // Update like buttons in track lists
+  document.querySelectorAll(`.track-like-btn[data-id="${trackId}"]`).forEach(btn => {
+    btn.textContent = favorites.has(trackId) ? '❤️' : '🤍';
+  });
+}
+
+// ========== BLOB COLOR ==========
+function updateBlobColor(color) {
+  blobMain.style.background = `radial-gradient(circle, ${color}88, ${color}22)`;
+  blobInner.style.background = color;
+  fpBlob1.style.background = color;
+  fpBlob2.style.background = color;
+}
+
+// ========== FULL PLAYER ==========
+function openFullPlayer() {
+  fullPlayer.classList.add('open');
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.expand();
+  }
+}
+
+function closeFullPlayer() {
+  fullPlayer.classList.remove('open');
+}
+
+// ========== PROGRESS BAR ==========
+audioEl.addEventListener('timeupdate', () => {
+  if (!audioEl.duration) return;
+  const pct = (audioEl.currentTime / audioEl.duration) * 100;
+  progressBarFill.style.width = pct + '%';
+  miniProgressFill.style.width = pct + '%';
+  timeCurrent.textContent = formatTime(audioEl.currentTime);
+  timeTotal.textContent = formatTime(audioEl.duration);
+});
+
+audioEl.addEventListener('ended', () => {
+  if (isRepeat) {
+    audioEl.currentTime = 0;
+    audioEl.play();
+  } else {
+    playNext();
+  }
+});
+
+audioEl.addEventListener('play', () => {
+  isPlaying = true;
+  updatePlayState();
+  updateAllCards();
+});
+
+audioEl.addEventListener('pause', () => {
+  isPlaying = false;
+  updatePlayState();
+  updateAllCards();
+});
+
+progressBarTrack.addEventListener('click', (e) => {
+  const rect = progressBarTrack.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  if (audioEl.duration) {
+    audioEl.currentTime = pct * audioEl.duration;
+  }
+});
+
+// Touch seek
+let isSeeking = false;
+progressBarTrack.addEventListener('touchstart', (e) => {
+  isSeeking = true;
+  e.preventDefault();
+}, { passive: false });
+
+progressBarTrack.addEventListener('touchmove', (e) => {
+  if (!isSeeking) return;
+  const touch = e.touches[0];
+  const rect = progressBarTrack.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+  if (audioEl.duration) {
+    audioEl.currentTime = pct * audioEl.duration;
+  }
+  e.preventDefault();
+}, { passive: false });
+
+progressBarTrack.addEventListener('touchend', () => { isSeeking = false; });
+
+// ========== CONTROLS ==========
+ctrlPlay.addEventListener('click', togglePlayPause);
+miniPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlayPause(); });
+document.getElementById('ctrl-prev').addEventListener('click', playPrev);
+document.getElementById('ctrl-next').addEventListener('click', playNext);
+document.getElementById('fp-close').addEventListener('click', closeFullPlayer);
+
+miniPlayer.addEventListener('click', () => {
+  if (currentTrackId) openFullPlayer();
+});
+
+miniLikeBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (currentTrackId) toggleLike(currentTrackId);
+});
+
+fpLikeBtn.addEventListener('click', () => {
+  if (currentTrackId) toggleLike(currentTrackId);
+});
+
+fpShuffleBtn.addEventListener('click', () => {
+  isShuffle = !isShuffle;
+  fpShuffleBtn.classList.toggle('active', isShuffle);
+  fpShuffleBtn.style.opacity = isShuffle ? '1' : '0.5';
+  showToast(isShuffle ? 'Перемешивание включено' : 'Перемешивание выключено');
+});
+
+fpRepeatBtn.addEventListener('click', () => {
+  isRepeat = !isRepeat;
+  fpRepeatBtn.classList.toggle('active', isRepeat);
+  fpRepeatBtn.style.opacity = isRepeat ? '1' : '0.5';
+  showToast(isRepeat ? 'Повтор включён' : 'Повтор выключен');
+});
+
+// Swipe to close full player
+let touchStartY = 0;
+fullPlayer.addEventListener('touchstart', (e) => {
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+fullPlayer.addEventListener('touchend', (e) => {
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (dy > 80) closeFullPlayer();
+}, { passive: true });
+
+// ========== NAVIGATION ==========
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    switchTab(tab);
+  });
+});
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+
+  if (tab === 'favorites') renderFavoritesList();
+  if (tab === 'search') {
+    document.getElementById('search-input').focus();
+  }
+}
+
+// ========== SEARCH ==========
+const searchInput = document.getElementById('search-input');
+searchInput.addEventListener('input', () => {
+  searchQuery = searchInput.value;
+  renderSearchList();
+});
+
+document.getElementById('search-clear').addEventListener('click', () => {
+  searchInput.value = '';
+  searchQuery = '';
+  renderSearchList();
+  searchInput.focus();
+});
+
+// ========== GENRE FILTER ==========
+document.querySelectorAll('.genre-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentGenreFilter = pill.dataset.genre;
+    renderTracksList();
+  });
+});
+
+// ========== TELEGRAM WEBAPP ==========
+if (window.Telegram && window.Telegram.WebApp) {
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+  tg.setHeaderColor('#000000');
+  tg.setBackgroundColor('#000000');
+}
+
+// ========== INIT ==========
+renderAll();
+</script>
 </body>
 </html>
