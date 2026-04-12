@@ -150,12 +150,31 @@ async def web_app_data(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         action = data.get("action", "")
 
         if action == "track_selected":
-            title = data.get("title", "?")
-            artist = data.get("artist", "?")
-            await update.message.reply_text(
-                f"🎵 Сейчас играет:\n<b>{title}</b>\n{artist}",
-                parse_mode="HTML",
-            )
+            title   = data.get("title", "?")
+            artist  = data.get("artist", "?")
+            file_id = data.get("file_id", "")
+
+            if file_id:
+                # Отправляем аудиофайл прямо в чат — Telegram воспроизведёт его
+                try:
+                    await update.message.reply_audio(
+                        audio=file_id,
+                        title=title,
+                        performer=artist,
+                        caption=f"🎵 <b>{title}</b> — {artist}\n\n🔥 EXCLUSIVE MUSIC BOT",
+                        parse_mode="HTML",
+                    )
+                except Exception as audio_err:
+                    logger.error("Ошибка отправки аудио: %s", audio_err)
+                    await update.message.reply_text(
+                        f"🎵 Сейчас играет:\n<b>{title}</b>\n{artist}",
+                        parse_mode="HTML",
+                    )
+            else:
+                await update.message.reply_text(
+                    f"🎵 Сейчас играет:\n<b>{title}</b>\n{artist}",
+                    parse_mode="HTML",
+                )
         elif action == "liked":
             title = data.get("title", "?")
             await update.message.reply_text(
