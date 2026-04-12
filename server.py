@@ -25,6 +25,47 @@ def index():
     return jsonify({"status": "ok", "service": "EXCLUSIVE MUSIC BOT proxy"})
 
 
+@app.route("/play", methods=["POST", "OPTIONS"])
+def play_track():
+    """WebApp отправляет file_id и chat_id — бот отсылает аудио пользователю."""
+    if request.method == "OPTIONS":
+        resp = Response()
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        return resp
+
+    try:
+        data = request.get_json(force=True)
+        file_id = data.get("file_id", "")
+        chat_id = data.get("chat_id", "")
+        title   = data.get("title", "")
+        artist  = data.get("artist", "")
+
+        if not file_id or not chat_id:
+            return jsonify({"error": "file_id and chat_id required"}), 400
+
+        caption = f"🎵 <b>{title}</b> \u2014 {artist}\n\n🔥 EXCLUSIVE MUSIC BOT"
+
+        r = requests.post(
+            f"{TELEGRAM_API}/sendAudio",
+            json={
+                "chat_id": chat_id,
+                "audio": file_id,
+                "caption": caption,
+                "parse_mode": "HTML",
+            },
+            timeout=15,
+        )
+        result = r.json()
+        resp = jsonify({"ok": result.get("ok"), "result": "sent"})
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        return resp
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/audio/<file_id>")
 def stream_audio(file_id):
     """Получает файл из Telegram и стримит его браузеру."""
@@ -39,35 +80,34 @@ def stream_audio(file_id):
 
         file_path = data["result"]["file_path"]
 
-        # Шаг 2 — стримим файл
+        # Шаг 2 — скачиваем файл и отдаём браузеру
         file_url = f"{TELEGRAM_FILE}/{file_path}"
-        range_header = request.headers.get("Range", None)
 
-        headers = {}
-        if range_header:
-            headers["Range"] = range_header
+        tg_resp = requests.get(file_url, stream=True, timeout=60)
+        tg_resp.raise_for_status()
 
-        tg_resp = requests.get(file_url, headers=headers, stream=True, timeout=30)
+        content_type = tg_resp.headers.get("Content-Type", "audio/mpeg")
+        # Убеждаемся что тип аудио
+        if "octet-stream" in content_type:
+            content_type = "audio/mpeg"
 
-        # Передаём заголовки браузеру
         response_headers = {
-            "Content-Type": tg_resp.headers.get("Content-Type", "audio/mpeg"),
+            "Content-Type": content_type,
             "Accept-Ranges": "bytes",
-            "Cache-Control": "public, max-age=3600",
+            "Cache-Control": "public, max-age=86400",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Range, Content-Type",
         }
         if "Content-Length" in tg_resp.headers:
             response_headers["Content-Length"] = tg_resp.headers["Content-Length"]
-        if "Content-Range" in tg_resp.headers:
-            response_headers["Content-Range"] = tg_resp.headers["Content-Range"]
-
-        status_code = tg_resp.status_code
 
         def generate():
-            for chunk in tg_resp.iter_content(chunk_size=8192):
+            for chunk in tg_resp.iter_content(chunk_size=16384):
                 if chunk:
                     yield chunk
 
-        return Response(generate(), status=status_code, headers=response_headers)
+        return Response(generate(), status=200, headers=response_headers)
 
     except requests.exceptions.Timeout:
         return jsonify({"error": "Telegram timeout"}), 504
