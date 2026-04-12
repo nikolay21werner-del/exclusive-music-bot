@@ -1019,6 +1019,11 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
+    // ===== PROXY CONFIG =====
+    // После деплоя на Railway замените на реальный адрес, например:
+    // window.PROXY_URL = 'https://exclusive-music-bot.up.railway.app';
+    window.PROXY_URL = '';
+
     // ===== DATA =====
     const TRACKS = [
       { id:1, msg_id:1, title:"Не лей (exclusive music remix)", artist:"Bake", genre:"remix", duration:235, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQADHWnbpnHkhd9QyNxWORqFL4taLfdQAAL-VgACoh6ZSd-Y1aP_mW60OwQ", plays:213 },
@@ -1398,6 +1403,43 @@
       state.recentIds = [track.id, ...state.recentIds.filter(id => id !== track.id)].slice(0, 10);
     }
 
+    // ===== HTML5 AUDIO ENGINE =====
+    const audioEl = new Audio();
+    audioEl.preload = 'none';
+
+    audioEl.addEventListener('timeupdate', () => {
+      if (!audioEl.duration) return;
+      state.progress = audioEl.currentTime * 1000;
+      const pct = (audioEl.currentTime / audioEl.duration) * 100;
+      progressFill.style.width = pct + '%';
+    });
+
+    audioEl.addEventListener('ended', () => {
+      onTrackEnd();
+    });
+
+    audioEl.addEventListener('error', (e) => {
+      console.warn('Audio error:', e);
+      showToast('Ошибка загрузки — переключаю...');
+      setTimeout(() => onTrackEnd(), 1500);
+    });
+
+    audioEl.addEventListener('waiting', () => {
+      showToast('⏳ Загрузка...');
+    });
+
+    audioEl.addEventListener('playing', () => {
+      state.isPlaying = true;
+      updatePlayIcon();
+      miniCover.classList.add('spinning');
+      setVizActive(true);
+    });
+
+    audioEl.addEventListener('pause', () => {
+      miniCover.classList.remove('spinning');
+      setVizActive(false);
+    });
+
     function startPlaying() {
       const t = state.queue[state.currentIndex];
       if (!t) return;
@@ -1420,19 +1462,29 @@
       renderTracks();
       renderQueue();
 
-      // Simulate progress
-      const totalMs = t.duration * 1000;
-      const interval = 500;
-      state.progressTimer = setInterval(() => {
-        if (!state.isPlaying) return;
-        state.progress = Math.min(state.progress + interval, totalMs);
-        const pct = (state.progress / totalMs) * 100;
-        progressFill.style.width = pct + '%';
-        if (state.progress >= totalMs) {
-          clearInterval(state.progressTimer);
-          onTrackEnd();
-        }
-      }, interval);
+      // Реальное воспроизведение через прокси
+      if (t.file_id && window.PROXY_URL) {
+        audioEl.src = window.PROXY_URL + '/audio/' + encodeURIComponent(t.file_id);
+        audioEl.load();
+        audioEl.play().catch(err => {
+          console.warn('Play error:', err);
+          showToast('Нажмите ещё раз для воспроизведения');
+        });
+      } else {
+        // Fallback — симуляция прогресса если прокси не настроен
+        const totalMs = t.duration * 1000;
+        const interval = 500;
+        state.progressTimer = setInterval(() => {
+          if (!state.isPlaying) return;
+          state.progress = Math.min(state.progress + interval, totalMs);
+          const pct = (state.progress / totalMs) * 100;
+          progressFill.style.width = pct + '%';
+          if (state.progress >= totalMs) {
+            clearInterval(state.progressTimer);
+            onTrackEnd();
+          }
+        }, interval);
+      }
     }
 
     function onTrackEnd() {
@@ -1458,6 +1510,14 @@
     function togglePlayPause() {
       if (state.currentIndex < 0) return;
       state.isPlaying = !state.isPlaying;
+      // Реальная пауза/воспроизведение
+      if (window.PROXY_URL) {
+        if (state.isPlaying) {
+          audioEl.play().catch(e => console.warn(e));
+        } else {
+          audioEl.pause();
+        }
+      }
       updatePlayIcon();
       setVizActive(state.isPlaying);
       if (state.isPlaying) miniCover.classList.add('spinning');
