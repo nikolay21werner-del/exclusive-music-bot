@@ -418,23 +418,7 @@
       text-align: center;
     }
 
-    /* ── LOADING ── */
-    .loading-screen {
-      position: fixed; inset: 0; z-index: 300; background: var(--bg);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
-      transition: opacity 0.5s;
-    }
-    .loading-screen.hidden { opacity: 0; pointer-events: none; }
-    .ld-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: 0.05em; }
-    .ld-subtitle { font-size: 12px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; }
-    .ld-bars { display: flex; gap: 5px; align-items: flex-end; height: 28px; }
-    .ld-bar { width: 5px; border-radius: 3px; animation: ld-a 0.8s ease-in-out infinite alternate; }
-    .ld-bar:nth-child(1){background:var(--blue);height:12px;}
-    .ld-bar:nth-child(2){background:var(--purple);height:22px;animation-delay:0.12s;}
-    .ld-bar:nth-child(3){background:var(--accent);height:16px;animation-delay:0.06s;}
-    .ld-bar:nth-child(4){background:var(--blue);height:26px;animation-delay:0.18s;}
-    .ld-bar:nth-child(5){background:var(--purple);height:14px;animation-delay:0.09s;}
-    @keyframes ld-a { from{transform:scaleY(.3);opacity:.5} to{transform:scaleY(1);opacity:1} }
+    
 
     /* ── TOAST ── */
     .toast {
@@ -456,8 +440,6 @@
 </head>
 <body>
 
-<div class="loading-screen" id="loader">
-  <div class="ld-title">Music Player</div>
   <div class="ld-bars">
     <div class="ld-bar"></div><div class="ld-bar"></div>
     <div class="ld-bar"></div><div class="ld-bar"></div><div class="ld-bar"></div>
@@ -1055,7 +1037,7 @@ try {
 queue=[...TRACKS];
 applyPalette(0); // default palette
 renderList();
-setTimeout(()=>document.getElementById('loader').classList.add('hidden'), 1100);
+
 </script>
 
 <script>
