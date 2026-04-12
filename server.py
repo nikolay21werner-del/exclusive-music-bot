@@ -8,7 +8,7 @@ import requests
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "7611594840:AAEAh5xvmWnMIpybzkIHPNPKKvWlEbozJ_E")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "7611594840:AAEAh5xvmWnMIpybzkIHPNPKKvWlEbozJ_E").strip()
 TELEGRAM_API  = f"https://api.telegram.org/bot{BOT_TOKEN}"
 TELEGRAM_FILE = f"https://api.telegram.org/file/bot{BOT_TOKEN}"
 
