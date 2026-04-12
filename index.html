@@ -1406,27 +1406,23 @@
     // ===== HTML5 AUDIO ENGINE =====
     const audioEl = new Audio();
     audioEl.preload = 'none';
+    audioEl.crossOrigin = 'anonymous';
 
     audioEl.addEventListener('timeupdate', () => {
       if (!audioEl.duration) return;
-      state.progress = audioEl.currentTime * 1000;
       const pct = (audioEl.currentTime / audioEl.duration) * 100;
       progressFill.style.width = pct + '%';
+      state.progress = audioEl.currentTime * 1000;
     });
 
-    audioEl.addEventListener('ended', () => {
-      onTrackEnd();
+    audioEl.addEventListener('ended', onTrackEnd);
+
+    audioEl.addEventListener('error', () => {
+      showToast('Ошибка — переключаю...');
+      setTimeout(onTrackEnd, 1500);
     });
 
-    audioEl.addEventListener('error', (e) => {
-      console.warn('Audio error:', e);
-      showToast('Ошибка загрузки — переключаю...');
-      setTimeout(() => onTrackEnd(), 1500);
-    });
-
-    audioEl.addEventListener('waiting', () => {
-      showToast('⏳ Загрузка...');
-    });
+    audioEl.addEventListener('waiting', () => showToast('⏳ Загрузка...'));
 
     audioEl.addEventListener('playing', () => {
       state.isPlaying = true;
@@ -1440,19 +1436,29 @@
       setVizActive(false);
     });
 
+    // Перемотка по полосе прогресса
+    const progressBar = document.querySelector('.progress-bar') || document.querySelector('.progress');
+    if (progressBar) {
+      progressBar.addEventListener('click', (e) => {
+        if (!audioEl.duration) return;
+        const rect = progressBar.getBoundingClientRect();
+        const pct  = (e.clientX - rect.left) / rect.width;
+        audioEl.currentTime = pct * audioEl.duration;
+      });
+    }
+
     function startPlaying() {
       const t = state.queue[state.currentIndex];
       if (!t) return;
 
       state.isPlaying = true;
-      state.progress = 0;
+      state.progress  = 0;
       clearInterval(state.progressTimer);
 
-      // Update player UI
       playerWrap.classList.remove('hidden');
       miniTitle.textContent = t.title;
       miniArtist.textContent = t.artist;
-      miniCover.textContent = t.emoji;
+      miniCover.textContent  = t.emoji;
       miniCover.classList.add('spinning');
       progressFill.style.width = '0%';
 
@@ -1462,59 +1468,46 @@
       renderTracks();
       renderQueue();
 
-      // Отправляем трек через сервер — бот пришлёт аудио в чат
       if (t.file_id && window.PROXY_URL) {
-        const chatId = tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id;
-        if (chatId) {
-          showToast('⏳ Отправляю в Telegram...');
-          fetch(window.PROXY_URL + '/play', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              file_id: t.file_id,
-              chat_id: chatId,
-              title: t.title,
-              artist: t.artist
-            })
-          })
-          .then(r => r.json())
-          .then(res => {
-            if (res.ok) showToast('✅ Отправлено в чат!');
-            else showToast('ℹ️ Откройте чат бота');
-          })
-          .catch(() => showToast('Ошибка связи'));
-        } else {
-          showToast('ℹ️ Откройте плеер через бота');
+        // Получаем прямую ссылку через прокси и воспроизводим
+        const audioUrl = window.PROXY_URL + '/audio/' + encodeURIComponent(t.file_id);
+        audioEl.src = audioUrl;
+        audioEl.load();
+        const playPromise = audioEl.play();
+        if (playPromise) {
+          playPromise.catch(err => {
+            console.warn('Autoplay blocked:', err);
+            showToast('▶️ Нажмите play ещё раз');
+            state.isPlaying = false;
+            updatePlayIcon();
+          });
         }
+      } else {
+        // Fallback — симуляция
+        const totalMs = t.duration * 1000;
+        state.progressTimer = setInterval(() => {
+          if (!state.isPlaying) return;
+          state.progress = Math.min(state.progress + 500, totalMs);
+          progressFill.style.width = (state.progress / totalMs * 100) + '%';
+          if (state.progress >= totalMs) {
+            clearInterval(state.progressTimer);
+            onTrackEnd();
+          }
+        }, 500);
       }
-
-      // Симуляция прогресса (визуально)
-      const totalMs = t.duration * 1000;
-      const interval = 500;
-      state.progressTimer = setInterval(() => {
-        if (!state.isPlaying) return;
-        state.progress = Math.min(state.progress + interval, totalMs);
-        const pct = (state.progress / totalMs) * 100;
-        progressFill.style.width = pct + '%';
-        if (state.progress >= totalMs) {
-          clearInterval(state.progressTimer);
-          onTrackEnd();
-        }
-      }, interval);
     }
 
     function onTrackEnd() {
-      if (state.repeatMode === 2) { // repeat one
-        state.progress = 0;
-        startPlaying();
+      if (state.repeatMode === 2) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(()=>{});
       } else if (state.currentIndex < state.queue.length - 1) {
         state.currentIndex++;
         startPlaying();
-      } else if (state.repeatMode === 1) { // repeat all
+      } else if (state.repeatMode === 1) {
         state.currentIndex = 0;
         startPlaying();
       } else {
-        // End of queue
         state.isPlaying = false;
         miniCover.classList.remove('spinning');
         setVizActive(false);
@@ -1525,14 +1518,16 @@
 
     function togglePlayPause() {
       if (state.currentIndex < 0) return;
-      state.isPlaying = !state.isPlaying;
-      // Реальная пауза/воспроизведение
-      if (window.PROXY_URL) {
-        if (state.isPlaying) {
+      if (audioEl.src && window.PROXY_URL) {
+        if (audioEl.paused) {
           audioEl.play().catch(e => console.warn(e));
+          state.isPlaying = true;
         } else {
           audioEl.pause();
+          state.isPlaying = false;
         }
+      } else {
+        state.isPlaying = !state.isPlaying;
       }
       updatePlayIcon();
       setVizActive(state.isPlaying);
