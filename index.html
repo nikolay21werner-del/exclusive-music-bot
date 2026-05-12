@@ -107,6 +107,29 @@ body::after{
 .g-winter{background:linear-gradient(135deg,#001830,#0055AA)}
 .g-city{background:linear-gradient(135deg,#0a1020,#003366)}
 
+
+/* ===== VK MUSIC ===== */
+.vk-page{padding:20px}
+.vk-login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;gap:20px;text-align:center}
+.vk-logo{width:64px;height:64px;background:linear-gradient(135deg,#2787F5,#5865F2);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 24px rgba(39,135,245,.4)}
+.vk-login-title{font-size:20px;font-weight:800;letter-spacing:-.3px}
+.vk-login-sub{font-size:13px;color:#2a5070;line-height:1.5}
+.vk-btn{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#2787F5,#5865F2);color:#fff;padding:14px 28px;border-radius:14px;font-size:15px;font-weight:700;box-shadow:0 0 20px rgba(39,135,245,.4);transition:transform .15s;cursor:pointer;border:none}
+.vk-btn:active{transform:scale(.96)}
+.vk-btn svg{width:22px;height:22px;fill:#fff}
+.vk-user-bar{display:flex;align-items:center;gap:12px;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:16px}
+.vk-avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#2787F5,#5865F2);display:flex;align-items:center;justify-content:center;font-size:18px}
+.vk-avatar img{width:100%;height:100%;object-fit:cover}
+.vk-user-info{flex:1;min-width:0}
+.vk-user-name{font-size:14px;font-weight:700}
+.vk-user-meta{font-size:11px;color:#2a5070;margin-top:2px}
+.vk-logout{font-size:12px;color:#1a4060;padding:4px 8px;background:var(--card);border-radius:8px;cursor:pointer}
+.vk-section-hdr{font-size:13px;font-weight:700;color:#2a5070;letter-spacing:1px;padding:8px 0 10px;display:flex;align-items:center;justify-content:space-between}
+.vk-section-hdr span{color:var(--blue);font-size:12px}
+.vk-loading{display:flex;flex-direction:column;align-items:center;padding:40px;gap:12px;color:#1a4060;font-size:13px}
+.vk-error{background:rgba(255,50,50,.08);border:1px solid rgba(255,50,50,.2);border-radius:12px;padding:14px;font-size:13px;color:#ff6666;text-align:center;margin:12px 0}
+.vk-track .t-cover{background:linear-gradient(135deg,#2787F5,#1a5580)}
+
 /* ===== GENRE GRID ===== */
 .genre-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 20px}
 .genre-card{border-radius:16px;padding:18px 14px 14px;cursor:pointer;position:relative;overflow:hidden;min-height:100px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .2s;border:1px solid rgba(0,100,255,.15)}
@@ -632,6 +655,37 @@ input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12p
   </div>
 </div>
 
+<!-- VK MUSIC PAGE -->
+<div class="page" id="pg-vk">
+  <div class="pg-hdr">
+    <h1>VK <span class="accent">Music</span></h1>
+  </div>
+  <div class="vk-page" id="vkContent">
+    <div class="vk-login-wrap" id="vkLoginWrap">
+      <div class="vk-logo">🎵</div>
+      <div class="vk-login-title">Войди через ВКонтакте</div>
+      <div class="vk-login-sub">Авторизуйся и слушай свою музыку из ВК прямо здесь — все твои сохранённые треки</div>
+      <button class="vk-btn" onclick="vkLogin()">
+        <svg viewBox="0 0 24 24"><path d="M21.579 6.855c.14-.465 0-.806-.666-.806h-2.196c-.56 0-.817.295-.957.620 0 0-1.116 2.720-2.698 4.482-.512.513-.744.675-1.024.675-.14 0-.342-.162-.342-.627V6.855c0-.559-.163-.806-.626-.806H9.642c-.35 0-.559.260-.559.507 0 .531.792.654.874 2.152v3.252c0 .710-.128.838-.408.838-.744 0-2.556-2.732-3.628-5.863-.21-.607-.42-.853-.985-.853H2.740c-.629 0-.754.295-.754.620 0 .582.744 3.463 3.464 7.277C7.28 17.266 9.776 18.5 12.050 18.5c1.397 0 1.570-.314 1.570-.854v-1.970c0-.628.133-.754.576-.754.325 0 .884.163 2.186 1.420C17.804 17.800 18.014 18.5 18.759 18.5h2.196c.628 0 .943-.314.762-.932-.198-.617-.907-1.510-1.850-2.570-.512-.605-1.280-1.255-1.513-1.580-.325-.42-.232-.605 0-.977 0 0 2.697-3.800 2.978-5.094l.247-.492z"/></svg>
+        Войти через ВКонтакте
+      </button>
+      <div style="font-size:11px;color:#1a3050;text-align:center;line-height:1.6">Используется официальный VK SDK.<br>Мы не храним твои данные.</div>
+    </div>
+    <div id="vkUserArea" style="display:none">
+      <div class="vk-user-bar" id="vkUserBar">
+        <div class="vk-avatar" id="vkAvatar">👤</div>
+        <div class="vk-user-info">
+          <div class="vk-user-name" id="vkUserName">Загрузка...</div>
+          <div class="vk-user-meta" id="vkUserMeta">ВКонтакте</div>
+        </div>
+        <button class="vk-logout" onclick="vkLogout()">Выйти</button>
+      </div>
+      <div class="vk-section-hdr">МОЯ МУЗЫКА <span id="vkTrackCount"></span></div>
+      <div id="vkTrackList"></div>
+    </div>
+  </div>
+</div>
+
 <!-- MINI PLAYER -->
 <div class="mini" id="mini" onclick="showPage('player')">
   <div class="mini-prog"><div class="mini-prog-bar" id="mini-bar"></div></div>
@@ -668,6 +722,10 @@ input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12p
   <button class="bnav-btn" onclick="showPage('player')" id="nav-player">
     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
     Player
+  </button>
+  <button class="bnav-btn" onclick="showPage('vk')" id="nav-vk">
+    <svg viewBox="0 0 24 24"><path d="M21.579 6.855c.14-.465 0-.806-.666-.806h-2.196c-.56 0-.817.295-.957.620 0 0-1.116 2.720-2.698 4.482-.512.513-.744.675-1.024.675-.14 0-.342-.162-.342-.627V6.855c0-.559-.163-.806-.626-.806H9.642c-.35 0-.559.260-.559.507 0 .531.792.654.874 2.152v3.252c0 .710-.128.838-.408.838-.744 0-2.556-2.732-3.628-5.863-.21-.607-.42-.853-.985-.853H2.740c-.629 0-.754.295-.754.620 0 .582.744 3.463 3.464 7.277C7.28 17.266 9.776 18.5 12.050 18.5c1.397 0 1.570-.314 1.570-.854v-1.970c0-.628.133-.754.576-.754.325 0 .884.163 2.186 1.420C17.804 17.800 18.014 18.5 18.759 18.5h2.196c.628 0 .943-.314.762-.932-.198-.617-.907-1.510-1.850-2.570-.512-.605-1.280-1.255-1.513-1.580-.325-.42-.232-.605 0-.977 0 0 2.697-3.800 2.978-5.094l.247-.492z"/></svg>
+    VK Music
   </button>
 </div>
 
@@ -1126,6 +1184,165 @@ async function playWorld(t){
   if(t.preview){audio.src=t.preview;audio.play().catch(()=>{});isPlaying=true;setPlayIcon(true);document.getElementById('fp-source').textContent='⚠️ ПРЕВЬЮ 30 СЕК';}
   else{document.getElementById('fp-source').textContent='❌ Недоступно';}
 }
+
+// ===== VK MUSIC =====
+const VK_APP_ID = '54589059';
+let vkToken = localStorage.getItem('vk_token') || null;
+let vkUser = JSON.parse(localStorage.getItem('vk_user') || 'null');
+let vkTracks = [];
+
+function vkLogin(){
+  const scope = 'audio';
+  const redirectUri = encodeURIComponent(window.location.href.split('?')[0]);
+  const url = `https://oauth.vk.com/authorize?client_id=${VK_APP_ID}&display=mobile&redirect_uri=${redirectUri}&scope=${scope}&response_type=token&v=5.131`;
+  // Open VK OAuth in popup/redirect
+  const w = window.open(url, '_blank', 'width=600,height=500');
+  if(!w){
+    // If popup blocked, redirect
+    window.location.href = url;
+    return;
+  }
+  // Listen for token in URL hash
+  const timer = setInterval(()=>{
+    try{
+      if(w.closed){
+        clearInterval(timer);
+        // Check if we got token via localStorage message
+        const t = localStorage.getItem('vk_token_tmp');
+        if(t){vkToken=t;localStorage.removeItem('vk_token_tmp');localStorage.setItem('vk_token',t);vkLoadUser();}
+        return;
+      }
+      const hash = w.location.hash;
+      if(hash && hash.includes('access_token')){
+        clearInterval(timer);
+        w.close();
+        const params = new URLSearchParams(hash.substring(1));
+        vkToken = params.get('access_token');
+        localStorage.setItem('vk_token', vkToken);
+        vkLoadUser();
+      }
+    }catch(e){}
+  }, 500);
+}
+
+// Handle redirect back with token in hash
+(function(){
+  const hash = window.location.hash;
+  if(hash && hash.includes('access_token')){
+    const params = new URLSearchParams(hash.substring(1));
+    const t = params.get('access_token');
+    if(t){
+      vkToken = t;
+      localStorage.setItem('vk_token', t);
+      history.replaceState(null, '', window.location.pathname);
+    }
+  }
+})();
+
+async function vkLoadUser(){
+  if(!vkToken) return;
+  document.getElementById('vkLoginWrap').style.display='none';
+  document.getElementById('vkUserArea').style.display='block';
+  document.getElementById('vkTrackList').innerHTML='<div class="vk-loading"><div class="spin-ring"></div>Загружаем твою музыку...</div>';
+  try{
+    // Get user info
+    const userRes = await fetch(`https://api.vk.com/method/users.get?fields=photo_100&access_token=${vkToken}&v=5.131`);
+    const userData = await userRes.json();
+    if(userData.response && userData.response[0]){
+      const u = userData.response[0];
+      vkUser = u;
+      localStorage.setItem('vk_user', JSON.stringify(u));
+      document.getElementById('vkUserName').textContent = u.first_name + ' ' + u.last_name;
+      document.getElementById('vkUserMeta').textContent = 'ВКонтакте · id' + u.id;
+      if(u.photo_100){
+        document.getElementById('vkAvatar').innerHTML = `<img src="${u.photo_100}">`;
+      }
+    }
+    // Get audio
+    await vkLoadAudio();
+  }catch(e){
+    document.getElementById('vkTrackList').innerHTML='<div class="vk-error">⚠️ Ошибка загрузки. Попробуй войти снова.</div>';
+  }
+}
+
+async function vkLoadAudio(){
+  try{
+    const res = await fetch(`https://api.vk.com/method/audio.get?count=200&access_token=${vkToken}&v=5.131`);
+    const data = await res.json();
+    if(data.error){
+      // Audio API may be restricted
+      document.getElementById('vkTrackList').innerHTML=`
+        <div class="vk-error">
+          ⚠️ ВКонтакте ограничил доступ к аудио через API.<br><br>
+          <b>Альтернатива:</b> найди любой трек через вкладку 🔍 Search — там 90M+ треков.
+        </div>`;
+      document.getElementById('vkTrackCount').textContent = '';
+      return;
+    }
+    vkTracks = (data.response && data.response.items) || [];
+    document.getElementById('vkTrackCount').textContent = vkTracks.length + ' треков';
+    renderVkTracks(vkTracks);
+  }catch(e){
+    document.getElementById('vkTrackList').innerHTML='<div class="vk-error">⚠️ Ошибка загрузки аудио.</div>';
+  }
+}
+
+function renderVkTracks(tracks){
+  if(!tracks.length){
+    document.getElementById('vkTrackList').innerHTML='<div class="no-results">🎵 Нет сохранённых треков</div>';
+    return;
+  }
+  document.getElementById('vkTrackList').innerHTML = tracks.map((t,i)=>{
+    const dur = fmt(t.duration||0);
+    const vkObj = {id:'vk_'+t.id, title:t.title, artist:t.artist, duration:t.duration, url:t.url||'', emoji:'🎵', genre:'remix'};
+    return `<div class="trow vk-track" onclick='playVkTrack(${JSON.stringify(vkObj)})'>
+      <div class="t-num">${i+1}</div>
+      <div class="t-cover g-electronic">${(t.artist||'?')[0].toUpperCase()}</div>
+      <div class="t-info">
+        <div class="t-title">${t.title}</div>
+        <div class="t-sub">${t.artist}</div>
+      </div>
+      <div class="t-right"><span class="t-dur">${dur}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function playVkTrack(t){
+  if(!t.url){
+    // Try search via globalSearch as fallback
+    document.getElementById('searchInput').value = t.artist + ' ' + t.title;
+    showPage('search');
+    onSearch(t.artist + ' ' + t.title);
+    return;
+  }
+  currentSource = 'deezer';
+  currentTrack = t;
+  showPage('player');
+  audio.src = t.url;
+  audio.play().catch(()=>{});
+  isPlaying = true;
+  document.getElementById('fp-title').textContent = t.title;
+  document.getElementById('fp-artist').textContent = t.artist;
+  document.getElementById('fp-source').textContent = '🎵 ВКонтакте МУЗЫКА';
+  setPlayIcon(true);
+  const disc = document.getElementById('fp-disc');
+  disc.className = 'fp-disc g-electronic spinning';
+  disc.innerHTML = '<span class="disc-emoji">🎵</span>';
+  updateMini();
+  document.getElementById('mini').classList.add('visible');
+  palIdx=(palIdx+1)%8; startWave();
+}
+
+function vkLogout(){
+  vkToken = null; vkUser = null; vkTracks = [];
+  localStorage.removeItem('vk_token');
+  localStorage.removeItem('vk_user');
+  document.getElementById('vkLoginWrap').style.display='flex';
+  document.getElementById('vkUserArea').style.display='none';
+}
+
+// Auto-load if token exists
+if(vkToken){ setTimeout(vkLoadUser, 500); }
 
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
