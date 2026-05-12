@@ -521,7 +521,7 @@ input[type=range]{-webkit-appearance:none;appearance:none;background:transparent
   transform:scale(1.08);
   pointer-events:none;
 }
-.splash-badge{
+.splash-badge-old_disabled{
   width:140px;height:140px;
   border-radius:50%;
   background:radial-gradient(circle at 40% 35%, #0a1628 0%, #000510 100%);
@@ -633,9 +633,55 @@ input[type=range]{-webkit-appearance:none;appearance:none;background:transparent
 </head>
 <body>
 <div id="splash">
-  <div class="splash-badge">
-    <div class="splash-crown">👑</div>
-    <div class="splash-e">E</div>
+  <div class="splash-badge" style="width:150px;height:150px;border:none;background:none;box-shadow:none;">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="width:150px;height:150px">
+<defs>
+<radialGradient id="spbg" cx="45%" cy="38%" r="62%">
+<stop offset="0%" stop-color="#0d1f42"/><stop offset="100%" stop-color="#020510"/>
+</radialGradient>
+<filter id="spglow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="spsg"><feGaussianBlur stdDeviation="1.2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<path id="spTopArc" d="M 18,80 A 62,62 0 0,1 142,80"/>
+<path id="spBotArc" d="M 25,92 A 55,55 0 0,0 135,92"/>
+</defs>
+<circle cx="80" cy="80" r="78" fill="#000818"/>
+<circle cx="80" cy="80" r="74" fill="url(#spbg)"/>
+<circle cx="80" cy="80" r="74" fill="none" stroke="#1a4a8a" stroke-width="2.5"/>
+<circle cx="80" cy="80" r="68" fill="none" stroke="#0d3060" stroke-width="0.8"/>
+<g stroke="#2a6abf" stroke-width="0.9" opacity="0.7"><line x1="150.0" y1="80.0" x2="153.0" y2="80.0"/><line x1="148.9" y1="92.2" x2="151.9" y2="92.7"/><line x1="145.8" y1="103.9" x2="148.6" y2="105.0"/><line x1="140.6" y1="115.0" x2="143.2" y2="116.5"/><line x1="133.6" y1="125.0" x2="135.9" y2="126.9"/><line x1="125.0" y1="133.6" x2="126.9" y2="135.9"/><line x1="115.0" y1="140.6" x2="116.5" y2="143.2"/><line x1="103.9" y1="145.8" x2="105.0" y2="148.6"/><line x1="92.2" y1="148.9" x2="92.7" y2="151.9"/><line x1="80.0" y1="150.0" x2="80.0" y2="153.0"/><line x1="67.8" y1="148.9" x2="67.3" y2="151.9"/><line x1="56.1" y1="145.8" x2="55.0" y2="148.6"/><line x1="45.0" y1="140.6" x2="43.5" y2="143.2"/><line x1="35.0" y1="133.6" x2="33.1" y2="135.9"/><line x1="26.4" y1="125.0" x2="24.1" y2="126.9"/><line x1="19.4" y1="115.0" x2="16.8" y2="116.5"/><line x1="14.2" y1="103.9" x2="11.4" y2="105.0"/><line x1="11.1" y1="92.2" x2="8.1" y2="92.7"/><line x1="10.0" y1="80.0" x2="7.0" y2="80.0"/><line x1="11.1" y1="67.8" x2="8.1" y2="67.3"/><line x1="14.2" y1="56.1" x2="11.4" y2="55.0"/><line x1="19.4" y1="45.0" x2="16.8" y2="43.5"/><line x1="26.4" y1="35.0" x2="24.1" y2="33.1"/><line x1="35.0" y1="26.4" x2="33.1" y2="24.1"/><line x1="45.0" y1="19.4" x2="43.5" y2="16.8"/><line x1="56.1" y1="14.2" x2="55.0" y2="11.4"/><line x1="67.8" y1="11.1" x2="67.3" y2="8.1"/><line x1="80.0" y1="10.0" x2="80.0" y2="7.0"/><line x1="92.2" y1="11.1" x2="92.7" y2="8.1"/><line x1="103.9" y1="14.2" x2="105.0" y2="11.4"/><line x1="115.0" y1="19.4" x2="116.5" y2="16.8"/><line x1="125.0" y1="26.4" x2="126.9" y2="24.1"/><line x1="133.6" y1="35.0" x2="135.9" y2="33.1"/><line x1="140.6" y1="45.0" x2="143.2" y2="43.5"/><line x1="145.8" y1="56.1" x2="148.6" y2="55.0"/><line x1="148.9" y1="67.8" x2="151.9" y2="67.3"/></g>
+<text font-size="8" font-weight="700" fill="#7ab0e0" letter-spacing="3.5" font-family="Arial Black,Arial,sans-serif" text-anchor="middle"><textPath href="#spTopArc" startOffset="50%">EXCLUSIVE · MUSIC · REMIX</textPath></text>
+<g fill="#1654a8" opacity="0.9">
+<path d="M80,63 C72,59 60,57 50,59 C55,61 58,63 60,66 C54,64 46,63 40,66 C46,67 50,69 52,72 C47,71 43,71 40,74 C46,74 50,75 53,78 L62,75 Z"/>
+<path d="M80,63 C88,59 100,57 110,59 C105,61 102,63 100,66 C106,64 114,63 120,66 C114,67 110,69 108,72 C113,71 117,71 120,74 C114,74 110,75 107,78 L98,75 Z"/>
+</g>
+<g stroke="#5a9fe0" stroke-width="0.7" fill="none" opacity="0.5">
+<path d="M80,64 C74,61 64,59 54,61 C58,63 61,65 62,68"/>
+<path d="M80,64 C86,61 96,59 106,61 C102,63 99,65 98,68"/>
+</g>
+<path d="M80,68 L91,73 L91,84 Q91,92 80,97 Q69,92 69,84 L69,73 Z" fill="#0b2e6a" stroke="#2060b0" stroke-width="1"/>
+<path d="M80,70 L89,74.5 L89,84 Q89,90 80,94 Q71,90 71,84 L71,74.5 Z" fill="#081d45"/>
+<text x="80" y="88" text-anchor="middle" font-size="17" font-weight="900" fill="#00B4FF" font-family="Arial Black,Arial,sans-serif" filter="url(#spglow)">E</text>
+<g transform="translate(80,60)" fill="#f0c000">
+<rect x="-11" y="2" width="22" height="4.5" rx="1.2" fill="#c49000"/>
+<polygon points="-11,2 -7.5,-4 -4,0.5 0,-6 4,0.5 7.5,-4 11,2" fill="#f5cc00"/>
+<circle cx="-7" cy="-3" r="1.3" fill="#fffaaa"/>
+<circle cx="0" cy="-5" r="1.5" fill="#fffaaa"/>
+<circle cx="7" cy="-3" r="1.3" fill="#fffaaa"/>
+</g>
+<g fill="#00B4FF" opacity="0.75" filter="url(#spsg)">
+<rect x="43" y="100" width="2.5" height="7" rx="1.2"/>
+<rect x="47" y="96" width="2.5" height="11" rx="1.2"/>
+<rect x="51" y="93" width="2.5" height="14" rx="1.2"/>
+<rect x="55" y="96" width="2.5" height="11" rx="1.2"/>
+<rect x="59" y="100" width="2.5" height="7" rx="1.2"/>
+<rect x="98" y="100" width="2.5" height="7" rx="1.2"/>
+<rect x="102" y="96" width="2.5" height="11" rx="1.2"/>
+<rect x="106" y="93" width="2.5" height="14" rx="1.2"/>
+<rect x="110" y="96" width="2.5" height="11" rx="1.2"/>
+<rect x="114" y="100" width="2.5" height="7" rx="1.2"/>
+</g>
+<text font-size="6.5" font-weight="600" fill="#3a7abf" letter-spacing="1.5" font-family="Arial,sans-serif" text-anchor="middle"><textPath href="#spBotArc" startOffset="50%">t.me/exclusive_music_remix</textPath></text>
+</svg>
   </div>
   <div class="splash-title">
     <div class="line1">Channel</div>
