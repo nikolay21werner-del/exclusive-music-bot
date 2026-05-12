@@ -33,7 +33,7 @@ from telegram.ext import (
 # ===== НАСТРОЙКИ =====
 BOT_TOKEN  = os.environ.get("BOT_TOKEN", "7611594840:AAEAh5xvmWnMIpybzkIHPNPKKvWlEbozJ_E")
 CHANNEL_ID = "@exclusive_music_remix"
-WEBAPP_URL = "https://nikolay21werner-del.github.io/exclusive-music-bot/?v=8"
+WEBAPP_URL = "https://nikolay21werner-del.github.io/exclusive-music-bot/?v=13"
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
