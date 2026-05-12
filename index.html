@@ -147,217 +147,326 @@ body{display:flex;flex-direction:column;overflow:hidden;}
 .genre-card-name{font-size:16px;font-weight:700;color:#fff;}
 .genre-card-count{font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px;}
 
-/* ── PLAYER PAGE — Apple Music full screen ────────────── */
+/* ══════════════════════════════════════════════════════
+   PLAYER PAGE — Apple Music exact copy (blue palette)
+   ══════════════════════════════════════════════════════ */
 #pg-player{
-  overflow:hidden;position:relative;
+  position:relative;
   background:#000;
-  display:flex;flex-direction:column;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  /* take full remaining height between header and nav */
   height:100%;
 }
-/* blurred bg cover — fills entire player */
+
+/* ── BLURRED BACKGROUND ── */
 .fp-bg{
-  position:absolute;inset:0;z-index:0;overflow:hidden;
+  position:absolute;
+  inset:0;
+  z-index:0;
 }
 .fp-bg-img{
-  width:100%;height:100%;object-fit:cover;
-  filter:blur(60px) brightness(0.25) saturate(2.5);
-  transform:scale(1.2);
-  transition:opacity 0.8s;
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:cover;
+  filter:blur(80px) brightness(0.22) saturate(3);
+  transform:scale(1.3);
+  transition:opacity 1s;
 }
 .fp-overlay{
   position:absolute;inset:0;
-  background:linear-gradient(180deg,
-    rgba(0,0,0,0.35) 0%,
-    rgba(0,0,0,0.5) 40%,
-    rgba(0,0,0,0.85) 80%,
-    rgba(0,0,0,0.95) 100%
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,0.2) 0%,
+    rgba(0,0,0,0.45) 35%,
+    rgba(0,0,0,0.75) 70%,
+    rgba(0,0,0,0.93) 100%
   );
 }
 
-/* Main content wrapper — fills player, no scroll, fixed layout */
+/* ── SCROLLABLE INNER WRAP ── */
 .fp-wrap{
-  position:relative;z-index:2;
-  display:flex;flex-direction:column;
+  position:relative;
+  z-index:2;
   flex:1;
-  min-height:0;
-  padding:0 24px 12px;
+  display:flex;
+  flex-direction:column;
+  /* horizontal padding like Apple Music */
+  padding:0 28px;
+  /* bottom padding so content doesn't hide under nav */
+  padding-bottom:8px;
   overflow:hidden;
+  min-height:0;
 }
 
-/* ── TOP BAR ── */
+/* ── TOP BAR ──
+   Apple Music: small chevron-down pill (left), "Now Playing" (center), ··· (right)
+*/
 .fp-top-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding-top:env(safe-area-inset-top, 12px);
-  padding-top:max(12px, env(safe-area-inset-top));
-  padding-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-top:14px;
+  padding-bottom:16px;
   flex-shrink:0;
 }
 .fp-back{
-  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,0.12);border-radius:50%;
+  width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.12);
+  border-radius:50%;
   border:none;color:#fff;cursor:pointer;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  flex-shrink:0;
 }
-.fp-back svg{width:20px;height:20px;stroke-width:2.5;}
+.fp-back svg{width:16px;height:16px;stroke-width:3;}
 .fp-now-label{
-  font-size:11px;font-weight:700;color:rgba(255,255,255,0.55);
-  letter-spacing:1.5px;text-transform:uppercase;
+  font-size:12px;
+  font-weight:700;
+  color:rgba(255,255,255,0.6);
+  letter-spacing:0.8px;
+  text-transform:uppercase;
+  text-align:center;
+  flex:1;
 }
 .fp-more{
-  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,0.12);border-radius:50%;
-  border:none;color:#fff;cursor:pointer;font-size:18px;font-weight:700;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  letter-spacing:2px;padding-bottom:4px;
+  width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.12);
+  border-radius:50%;
+  border:none;color:#fff;cursor:pointer;font-size:20px;
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  line-height:1;
+  padding-bottom:3px;
+  flex-shrink:0;
 }
 
-/* ── DISC AREA — takes up available vertical space ── */
+/* ── ARTWORK / COVER — Apple Music style ──
+   Large square, rounded 16px, fills most of screen width
+   Has a dramatic shadow below it
+*/
 .fp-disc-area{
-  display:flex;align-items:center;justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   flex:1;
   min-height:0;
-  position:relative;
-  padding:8px 0;
+  padding:4px 0 16px;
 }
-.fp-wave-canvas{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none;z-index:0;
-}
+/* hide waveform canvas — not in Apple Music */
+.fp-wave-canvas{ display:none; }
+
 .fp-cover-ring{
-  width:min(75vw, 310px);
-  height:min(75vw, 310px);
-  border-radius:20px;
+  /* Apple Music cover: square, ~87% of content width */
+  width:min(82vw, 320px);
+  height:min(82vw, 320px);
+  border-radius:16px;
   position:relative;
   flex-shrink:0;
+  /* dramatic bottom shadow like Apple Music */
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.08),
-    0 28px 90px rgba(0,0,0,0.85),
-    0 0 60px rgba(0,100,255,0.3);
-  transition:transform 0.3s ease;
+    0 32px 80px rgba(0,0,0,0.85),
+    0 8px 30px rgba(0,0,0,0.5);
+  /* scale up slightly when playing — Apple Music does this */
+  transform:scale(0.94);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),
+             box-shadow 0.4s ease;
 }
-.fp-cover-ring.playing{transform:scale(1.04);}
+.fp-cover-ring.playing{
+  transform:scale(1.0);
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.9),
+    0 12px 40px rgba(0,100,255,0.3);
+}
 .fp-disc{
-  position:absolute;inset:0;border-radius:20px;overflow:hidden;
+  position:absolute;inset:0;
+  border-radius:16px;
+  overflow:hidden;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#003388,#0066cc);
 }
-.fp-disc img{width:100%;height:100%;object-fit:cover;}
-.fp-disc-emoji{font-size:80px;z-index:1;}
-.fp-disc-hole{display:none;}
-
-/* spinning — Apple Music rotates the whole cover slightly */
-@keyframes discPulse{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.01);}
-  100%{transform:scale(1);}
+.fp-disc img{
+  width:100%;height:100%;
+  object-fit:cover;
+  display:block;
 }
-.fp-disc.spinning{animation:discPulse 3s ease-in-out infinite;}
-.fp-disc.paused{animation:none;}
+.fp-disc-emoji{ font-size:90px; }
+.fp-disc-hole{ display:none; }
 
-/* ── TRACK INFO ── */
+/* no rotation — Apple Music doesn't spin the cover */
+.fp-disc.spinning,.fp-disc.paused{ animation:none; }
+
+/* ── TRACK INFO ROW ── */
 .fp-info-row{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:20px;flex-shrink:0;gap:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:0;
+  flex-shrink:0;
+  padding-bottom:2px;
 }
-.fp-info-text{flex:1;min-width:0;}
+.fp-info-text{
+  flex:1;
+  min-width:0;
+}
 .fp-track-title{
-  font-size:22px;font-weight:700;color:#fff;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  letter-spacing:-0.5px;
+  font-size:21px;
+  font-weight:700;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:-0.4px;
   line-height:1.2;
 }
 .fp-track-artist{
-  font-size:16px;color:rgba(255,255,255,0.5);
-  margin-top:5px;font-weight:500;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:16px;
+  font-weight:400;
+  color:#00B4FF;
+  margin-top:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
+/* Apple Music: heart is outlined, becomes filled blue when liked */
 .fp-heart{
-  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
   background:none;border:none;cursor:pointer;
-  color:rgba(255,255,255,0.35);font-size:24px;
-  transition:color 0.2s,transform 0.15s;flex-shrink:0;
+  color:rgba(255,255,255,0.3);
+  font-size:22px;
+  transition:color 0.2s,transform 0.15s;
+  flex-shrink:0;
 }
-.fp-heart:active{transform:scale(1.3);}
+.fp-heart:active{transform:scale(1.35);}
 .fp-heart.liked{color:#00B4FF;}
 
-/* ── PROGRESS ── */
-.fp-progress-wrap{margin-top:16px;flex-shrink:0;}
+/* ── PROGRESS BAR ──
+   Apple Music: very thin (3-4px), white filled, small white dot thumb
+*/
+.fp-progress-wrap{
+  margin-top:14px;
+  flex-shrink:0;
+}
 .fp-progress{
-  width:100%;height:4px;
-  background:rgba(255,255,255,0.2);
-  border-radius:4px;cursor:pointer;
-  appearance:none;-webkit-appearance:none;outline:none;
+  width:100%;
+  height:4px;
+  background:rgba(255,255,255,0.22);
+  border-radius:4px;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  outline:none;
   display:block;
 }
 .fp-progress::-webkit-slider-runnable-track{
-  height:4px;border-radius:4px;
+  height:4px;
+  border-radius:4px;
   background:linear-gradient(
     to right,
-    #fff var(--prog,0%),
-    rgba(255,255,255,0.2) var(--prog,0%)
+    rgba(255,255,255,0.95) var(--prog,0%),
+    rgba(255,255,255,0.22) var(--prog,0%)
   );
 }
 .fp-progress::-webkit-slider-thumb{
-  appearance:none;width:16px;height:16px;
-  border-radius:50%;background:#fff;
-  margin-top:-6px;cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,0.5);
+  -webkit-appearance:none;
+  appearance:none;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:#fff;
+  margin-top:-5px;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,0.5);
 }
 .fp-progress::-moz-range-thumb{
-  width:16px;height:16px;border-radius:50%;
-  background:#fff;border:none;cursor:pointer;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:#fff;
+  border:none;
+  cursor:pointer;
 }
 .fp-time-row{
-  display:flex;justify-content:space-between;
-  margin-top:5px;flex-shrink:0;
+  display:flex;
+  justify-content:space-between;
+  margin-top:5px;
+  flex-shrink:0;
 }
-.fp-time{font-size:11px;color:rgba(255,255,255,0.4);font-weight:500;}
+.fp-time{
+  font-size:11px;
+  color:rgba(255,255,255,0.4);
+  font-weight:500;
+  letter-spacing:0.2px;
+}
 
-/* ── CONTROLS ── */
+/* ── MAIN CONTROLS ──
+   Apple Music: shuffle(left) · ⏮ · ▶⏸(white filled circle, 72px) · ⏭ · repeat(right)
+   Play button is the visual centrepiece
+*/
 .fp-controls{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:20px;flex-shrink:0;
-  padding:0 4px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:18px;
+  flex-shrink:0;
+  padding:0 2px;
 }
 .fp-ctrl-btn{
-  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;
+  display:flex;align-items:center;justify-content:center;
   background:none;border:none;cursor:pointer;
-  color:rgba(255,255,255,0.45);transition:color 0.2s,transform 0.15s;
+  color:rgba(255,255,255,0.5);
+  transition:color 0.2s, transform 0.12s;
+  flex-shrink:0;
 }
-.fp-ctrl-btn:active{transform:scale(0.85);}
-.fp-ctrl-btn.active{color:#00B4FF;}
-.fp-ctrl-btn svg{width:22px;height:22px;}
-.fp-ctrl-btn.skip svg{width:32px;height:32px;}
-.fp-ctrl-btn.skip{color:rgba(255,255,255,0.9);}
-/* play button — white circle */
+.fp-ctrl-btn svg{ width:22px;height:22px; }
+.fp-ctrl-btn:active{ transform:scale(0.84); }
+.fp-ctrl-btn.active{ color:#00B4FF; }
+/* skip buttons larger */
+.fp-ctrl-btn.skip svg{ width:32px;height:32px; }
+.fp-ctrl-btn.skip{ color:rgba(255,255,255,0.92); }
+/* PLAY — white circle, black icon, Apple 72px */
 .fp-play-btn{
-  width:70px;height:70px;border-radius:50%;
+  width:72px;height:72px;
+  border-radius:50%;
   background:#fff;
   display:flex;align-items:center;justify-content:center;
-  cursor:pointer;border:none;flex-shrink:0;
-  box-shadow:0 8px 30px rgba(0,0,0,0.6);
-  transition:transform 0.12s;
+  border:none;cursor:pointer;flex-shrink:0;
+  box-shadow:0 8px 28px rgba(0,0,0,0.55);
+  transition:transform 0.1s, box-shadow 0.2s;
 }
-.fp-play-btn:active{transform:scale(0.93);}
-.fp-play-btn svg{width:28px;height:28px;fill:#000;}
+.fp-play-btn:active{ transform:scale(0.91); }
+.fp-play-btn svg{ width:28px;height:28px;fill:#000; }
 
-/* ── VOLUME ── */
+/* ── VOLUME SLIDER ── */
 .fp-vol-row{
-  display:flex;align-items:center;gap:10px;
-  margin-top:18px;flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:16px;
+  flex-shrink:0;
 }
-.fp-vol-icon{color:rgba(255,255,255,0.35);flex-shrink:0;display:flex;}
-.fp-vol-icon svg{width:16px;height:16px;}
+.fp-vol-icon{
+  color:rgba(255,255,255,0.35);
+  flex-shrink:0;
+  display:flex;
+}
+.fp-vol-icon svg{ width:16px;height:16px; }
 .fp-vol{
   flex:1;height:4px;
   background:rgba(255,255,255,0.2);
-  border-radius:4px;cursor:pointer;
+  border-radius:4px;
+  cursor:pointer;
   appearance:none;-webkit-appearance:none;outline:none;
 }
 .fp-vol::-webkit-slider-thumb{
-  appearance:none;width:14px;height:14px;
-  border-radius:50%;background:rgba(255,255,255,0.9);
+  -webkit-appearance:none;appearance:none;
+  width:14px;height:14px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.9);
   cursor:pointer;
 }
 .fp-vol::-moz-range-thumb{
@@ -370,10 +479,8 @@ body{display:flex;flex-direction:column;overflow:hidden;}
   letter-spacing:1px;text-transform:uppercase;
 }
 
-/* ── CAR SCENE — hidden on small screens to save space ── */
-.fp-car-scene{
-  display:none;
-}
+/* ── CAR SCENE hidden — not in Apple Music layout ── */
+.fp-car-scene{ display:none; }
 
 /* ── VK PAGE ─────────────────────────────────────── */
 #pg-vk{padding-bottom:140px;align-items:stretch;}
