@@ -657,10 +657,23 @@ input[type=range]{-webkit-appearance:none;appearance:none;background:transparent
     <div class="vk-title">VK Music</div>
   </div>
   <div class="vk-content" id="vk-content">
-    <p style="color:#3a5a7a;font-size:14px;line-height:1.5;padding:4px 0 8px;">Войдите через VK, чтобы получить доступ к музыкальным функциям</p>
-    <button class="vk-login-btn" onclick="vkLogin()">
-      Войти через VK
+    <!-- VK logo -->
+    <div style="display:flex;flex-direction:column;align-items:center;padding:16px 0 24px;gap:14px;text-align:center">
+      <div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#2787F5,#5865F2);display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(39,135,245,0.4)">
+        <svg viewBox="0 0 24 24" width="38" height="38" fill="#fff"><path d="M21.579 6.855c.14-.465 0-.806-.666-.806h-2.196c-.56 0-.817.295-.957.62 0 0-1.116 2.72-2.698 4.482-.512.513-.744.675-1.024.675-.14 0-.342-.162-.342-.627V6.855c0-.559-.163-.806-.626-.806H9.642c-.35 0-.559.26-.559.507 0 .531.792.654.874 2.152v3.252c0 .71-.128.838-.408.838-.744 0-2.556-2.732-3.628-5.863-.21-.607-.42-.853-.985-.853H2.74c-.629 0-.754.295-.754.62 0 .582.744 3.463 3.464 7.277C7.28 17.266 9.776 18.5 12.05 18.5c1.397 0 1.57-.314 1.57-.854v-1.97c0-.628.133-.754.576-.754.325 0 .884.163 2.186 1.42C17.804 17.8 18.014 18.5 18.759 18.5h2.196c.628 0 .943-.314.762-.932-.198-.617-.907-1.51-1.85-2.57-.512-.605-1.28-1.255-1.513-1.58-.325-.42-.232-.605 0-.977 0 0 2.697-3.8 2.978-5.094l.247-.492z"/></svg>
+      </div>
+      <div>
+        <div style="font-size:20px;font-weight:800;color:#fff">ВКонтакте</div>
+        <div style="font-size:13px;color:#3a5a7a;margin-top:4px;line-height:1.5">Войди и слушай музыку<br>через глобальный поиск</div>
+      </div>
+    </div>
+    <button class="vk-login-btn" onclick="vkLogin()" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M21.579 6.855c.14-.465 0-.806-.666-.806h-2.196c-.56 0-.817.295-.957.62 0 0-1.116 2.72-2.698 4.482-.512.513-.744.675-1.024.675-.14 0-.342-.162-.342-.627V6.855c0-.559-.163-.806-.626-.806H9.642c-.35 0-.559.26-.559.507 0 .531.792.654.874 2.152v3.252c0 .71-.128.838-.408.838-.744 0-2.556-2.732-3.628-5.863-.21-.607-.42-.853-.985-.853H2.74c-.629 0-.754.295-.754.62 0 .582.744 3.463 3.464 7.277C7.28 17.266 9.776 18.5 12.05 18.5c1.397 0 1.57-.314 1.57-.854v-1.97c0-.628.133-.754.576-.754.325 0 .884.163 2.186 1.42C17.804 17.8 18.014 18.5 18.759 18.5h2.196c.628 0 .943-.314.762-.932-.198-.617-.907-1.51-1.85-2.57-.512-.605-1.28-1.255-1.513-1.58-.325-.42-.232-.605 0-.977 0 0 2.697-3.8 2.978-5.094l.247-.492z"/></svg>
+      Войти через ВКонтакте
     </button>
+    <div style="font-size:11px;color:#1a3050;text-align:center;margin-top:12px;line-height:1.7">
+      После входа откроется поиск по 90M+ трекам<br>и 170 эксклюзивных ремиксов
+    </div>
   </div>
 </div>
 
@@ -1499,8 +1512,13 @@ function initGenreCounts() {
 // VK
 // ═══════════════════════════════════════════════════════
 function vkLogin() {
-  const redirectUri = encodeURIComponent(window.location.href.split('#')[0]);
-  const url = 'https://oauth.vk.com/authorize?client_id=' + VK_APP_ID + '&display=mobile&redirect_uri=' + redirectUri + '&scope=&response_type=token&v=5.131';
+  // Чистый redirect_uri без параметров Telegram
+  const cleanUrl = window.location.origin + window.location.pathname;
+  const redirectUri = encodeURIComponent(cleanUrl);
+  const url = 'https://oauth.vk.com/authorize?client_id=' + VK_APP_ID +
+    '&display=mobile&redirect_uri=' + redirectUri +
+    '&scope=&response_type=token&v=5.131&revoke=1';
+  // Открываем в том же окне — при редиректе назад токен в hash
   window.location.href = url;
 }
 
