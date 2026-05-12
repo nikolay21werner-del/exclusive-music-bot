@@ -147,101 +147,235 @@ body{display:flex;flex-direction:column;overflow:hidden;}
 .genre-card-name{font-size:16px;font-weight:700;color:#fff;}
 .genre-card-count{font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px;}
 
-/* ── PLAYER PAGE ─────────────────────────────────────── */
-#pg-player{overflow:hidden;position:relative;background:linear-gradient(180deg,#05080f 0%,#040613 100%);}
-.fp-bg{position:absolute;inset:0;z-index:0;overflow:hidden;}
-.fp-bg-img{width:100%;height:100%;object-fit:cover;filter:blur(40px) brightness(0.25) saturate(1.5);transform:scale(1.1);}
-.fp-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,15,0.6) 0%,rgba(5,8,15,0.85) 60%,rgba(5,8,15,0.97) 100%);}
-.fp-wrap{
-  position:relative;z-index:1;
+/* ── PLAYER PAGE — Apple Music exact ────────────────── */
+#pg-player{
+  overflow:hidden;position:relative;
+  background:#000;
   display:flex;flex-direction:column;
-  height:100%;
-  padding:0 20px;
-  padding-bottom:40%;
+}
+/* blurred bg cover — fills entire player */
+.fp-bg{
+  position:absolute;inset:0;z-index:0;overflow:hidden;
+}
+.fp-bg-img{
+  width:100%;height:100%;object-fit:cover;
+  filter:blur(50px) brightness(0.3) saturate(2);
+  transform:scale(1.15);
+  transition:opacity 0.8s;
+}
+.fp-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    rgba(0,0,0,0.45) 0%,
+    rgba(0,0,0,0.6) 50%,
+    rgba(5,8,15,0.92) 100%
+  );
+}
+
+/* scrollable content above car */
+.fp-wrap{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;
+  flex:1;
+  padding:0 24px;
+  /* leave room for car scene at bottom */
+  padding-bottom:34vw;
   overflow-y:auto;
+  overflow-x:hidden;
   scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
 }
 .fp-wrap::-webkit-scrollbar{display:none;}
+
+/* ── TOP BAR ── exact Apple: chevron.down left, title center, ellipsis right */
 .fp-top-bar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:16px 0 8px;flex-shrink:0;
+  padding-top:14px;padding-bottom:4px;flex-shrink:0;
 }
-.fp-back{background:none;border:none;color:#fff;cursor:pointer;padding:4px;display:flex;}
-.fp-back svg{width:24px;height:24px;}
-.fp-now-label{font-size:13px;font-weight:700;color:#fff;letter-spacing:1px;}
-.fp-more{background:none;border:none;color:#fff;cursor:pointer;font-size:22px;padding:4px;}
+.fp-back{
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.1);border-radius:50%;
+  border:none;color:#fff;cursor:pointer;
+  backdrop-filter:blur(10px);
+}
+.fp-back svg{width:18px;height:18px;stroke-width:2.5;}
+.fp-now-label{
+  font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);
+  letter-spacing:0.5px;text-transform:uppercase;
+}
+.fp-more{
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.1);border-radius:50%;
+  border:none;color:#fff;cursor:pointer;font-size:16px;font-weight:700;
+  backdrop-filter:blur(10px);letter-spacing:1px;
+}
 
-/* disc area */
-.fp-disc-area{display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;margin:8px 0 0;}
-.fp-wave-canvas{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+/* ── DISC AREA — Apple Music: large square art with rounded corners → we keep circle ── */
+.fp-disc-area{
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  margin:20px 0 0;
+  position:relative;
+}
+.fp-wave-canvas{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;z-index:0;
+}
 .fp-cover-ring{
-  width:200px;height:200px;border-radius:50%;position:relative;
-  box-shadow:0 0 40px rgba(0,180,255,0.25);flex-shrink:0;
+  width:min(68vw,260px);
+  height:min(68vw,260px);
+  border-radius:50%;
+  position:relative;
+  flex-shrink:0;
+  /* Apple shadow */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 20px 60px rgba(0,0,0,0.7),
+    0 0 40px rgba(0,180,255,0.2);
 }
 .fp-disc{
   position:absolute;inset:0;border-radius:50%;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#003388,#0066cc);
-  transition:transform 0.1s linear;
 }
 .fp-disc img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.fp-disc-emoji{font-size:64px;z-index:1;}
 .fp-disc-hole{
-  position:absolute;width:28px;height:28px;border-radius:50%;
-  background:#05080f;top:50%;left:50%;transform:translate(-50%,-50%);
-  box-shadow:0 0 0 3px rgba(0,180,255,0.3);z-index:2;
+  position:absolute;width:24px;height:24px;border-radius:50%;
+  background:rgba(0,0,0,0.8);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  box-shadow:0 0 0 2px rgba(0,180,255,0.25);z-index:3;
 }
 
-/* track info row */
+/* spinning */
+@keyframes discSpin{to{transform:rotate(360deg)}}
+.fp-disc.spinning{animation:discSpin 12s linear infinite;}
+.fp-disc.paused{animation-play-state:paused;}
+
+/* ── TRACK INFO — Apple: title bold left, heart right ── */
 .fp-info-row{
   display:flex;align-items:center;justify-content:space-between;
-  margin-top:16px;flex-shrink:0;
+  margin-top:22px;flex-shrink:0;gap:12px;
 }
 .fp-info-text{flex:1;min-width:0;}
-.fp-track-title{font-size:20px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fp-track-artist{font-size:14px;color:#4a7090;margin-top:3px;}
-.fp-heart{background:none;border:none;cursor:pointer;font-size:24px;padding:4px;flex-shrink:0;opacity:0.5;transition:opacity 0.2s;}
-.fp-heart.liked{opacity:1;}
+.fp-track-title{
+  font-size:22px;font-weight:700;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  letter-spacing:-0.3px;
+}
+.fp-track-artist{
+  font-size:16px;color:rgba(255,255,255,0.45);
+  margin-top:4px;font-weight:500;
+}
+.fp-heart{
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,0.35);font-size:22px;
+  transition:color 0.2s,transform 0.15s;flex-shrink:0;
+}
+.fp-heart:active{transform:scale(1.3);}
+.fp-heart.liked{color:#00B4FF;}
 
-/* progress */
-.fp-progress-wrap{margin-top:16px;flex-shrink:0;}
-.fp-progress{width:100%;height:3px;background:rgba(255,255,255,0.12);border-radius:2px;cursor:pointer;position:relative;appearance:none;-webkit-appearance:none;outline:none;}
-.fp-progress::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;cursor:pointer;box-shadow:0 0 6px rgba(255,255,255,0.6);}
-.fp-progress::-webkit-slider-runnable-track{height:3px;border-radius:2px;}
-.fp-progress::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;cursor:pointer;border:none;}
-.fp-time-row{display:flex;justify-content:space-between;margin-top:6px;flex-shrink:0;}
-.fp-time{font-size:12px;color:#3a5a7a;}
+/* ── PROGRESS — Apple: thin white track, white thumb ── */
+.fp-progress-wrap{margin-top:20px;flex-shrink:0;}
+.fp-progress{
+  width:100%;height:4px;
+  background:rgba(255,255,255,0.18);
+  border-radius:4px;cursor:pointer;
+  appearance:none;-webkit-appearance:none;outline:none;
+  display:block;
+}
+.fp-progress::-webkit-slider-runnable-track{
+  height:4px;border-radius:4px;
+  background:linear-gradient(
+    to right,
+    rgba(255,255,255,0.9) var(--prog,0%),
+    rgba(255,255,255,0.18) var(--prog,0%)
+  );
+}
+.fp-progress::-webkit-slider-thumb{
+  appearance:none;width:16px;height:16px;
+  border-radius:50%;background:#fff;
+  margin-top:-6px;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
+}
+.fp-progress::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;border:none;cursor:pointer;
+}
+.fp-time-row{
+  display:flex;justify-content:space-between;
+  margin-top:6px;flex-shrink:0;
+}
+.fp-time{font-size:12px;color:rgba(255,255,255,0.35);font-weight:500;}
 
-/* controls */
+/* ── CONTROLS — Apple: shuffle | ⏮ | ▶(white circle) | ⏭ | repeat ── */
 .fp-controls{
   display:flex;align-items:center;justify-content:space-between;
-  margin-top:20px;flex-shrink:0;
+  margin-top:24px;flex-shrink:0;
+  padding:0 4px;
 }
-.fp-ctrl-btn{background:none;border:none;cursor:pointer;color:#4a7090;padding:6px;display:flex;transition:color 0.2s;}
+.fp-ctrl-btn{
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,0.4);transition:color 0.2s,transform 0.15s;
+}
+.fp-ctrl-btn:active{transform:scale(0.85);}
 .fp-ctrl-btn.active{color:#00B4FF;}
-.fp-ctrl-btn svg{width:24px;height:24px;}
+.fp-ctrl-btn svg{width:22px;height:22px;}
+/* prev/next bigger */
+.fp-ctrl-btn.skip svg{width:30px;height:30px;color:rgba(255,255,255,0.85);}
+.fp-ctrl-btn.skip{color:rgba(255,255,255,0.85);}
+/* play button — white circle, Apple style */
 .fp-play-btn{
-  width:64px;height:64px;border-radius:50%;
-  background:#fff;display:flex;align-items:center;justify-content:center;
+  width:72px;height:72px;border-radius:50%;
+  background:#fff;
+  display:flex;align-items:center;justify-content:center;
   cursor:pointer;border:none;flex-shrink:0;
-  box-shadow:0 4px 20px rgba(255,255,255,0.25);
-  transition:transform 0.1s,box-shadow 0.2s;
+  box-shadow:0 6px 24px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.08);
+  transition:transform 0.12s,box-shadow 0.2s;
 }
-.fp-play-btn:active{transform:scale(0.95);}
-.fp-play-btn svg{width:28px;height:28px;color:#000;}
+.fp-play-btn:active{transform:scale(0.93);}
+.fp-play-btn svg{width:30px;height:30px;fill:#000;}
 
-/* volume */
-.fp-vol-row{display:flex;align-items:center;gap:10px;margin-top:20px;flex-shrink:0;}
-.fp-vol-icon{color:#3a5a7a;flex-shrink:0;}
+/* ── VOLUME — Apple: speaker icons + slider ── */
+.fp-vol-row{
+  display:flex;align-items:center;gap:10px;
+  margin-top:24px;flex-shrink:0;
+}
+.fp-vol-icon{color:rgba(255,255,255,0.3);flex-shrink:0;display:flex;}
 .fp-vol-icon svg{width:18px;height:18px;}
-.fp-vol{flex:1;height:3px;background:rgba(255,255,255,0.12);border-radius:2px;cursor:pointer;appearance:none;-webkit-appearance:none;outline:none;}
-.fp-vol::-webkit-slider-thumb{appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;cursor:pointer;}
-.fp-vol::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:none;cursor:pointer;}
-.fp-source{font-size:10px;color:#1a3050;text-align:center;margin-top:10px;flex-shrink:0;}
+.fp-vol{
+  flex:1;height:4px;
+  background:rgba(255,255,255,0.18);
+  border-radius:4px;cursor:pointer;
+  appearance:none;-webkit-appearance:none;outline:none;
+}
+.fp-vol::-webkit-slider-thumb{
+  appearance:none;width:14px;height:14px;
+  border-radius:50%;background:rgba(255,255,255,0.85);
+  cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.3);
+}
+.fp-vol::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;
+  background:rgba(255,255,255,0.85);border:none;
+}
+.fp-source{
+  font-size:10px;color:rgba(255,255,255,0.2);
+  text-align:center;margin-top:12px;flex-shrink:0;
+  letter-spacing:1px;text-transform:uppercase;
+}
 
-/* car scene */
+/* ── CAR SCENE — fixed at bottom of player, above nav ── */
 .fp-car-scene{
-  position:absolute;bottom:56px;left:0;right:0;
-  height:35%;pointer-events:none;overflow:hidden;
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:33vw;
+  max-height:140px;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:1;
 }
 
 /* ── VK PAGE ─────────────────────────────────────── */
@@ -325,70 +459,111 @@ input[type=range]{-webkit-appearance:none;appearance:none;background:transparent
 
 <!-- PAGE 4: PLAYER -->
 <div id="pg-player" class="page">
+  <!-- blurred background image -->
   <div class="fp-bg">
     <img id="fp-bg-img" class="fp-bg-img" src="" alt="">
     <div class="fp-overlay"></div>
   </div>
-  <div class="fp-wrap" id="fp-wrap">
+
+  <!-- scrollable content -->
+  <div class="fp-wrap">
+
+    <!-- TOP BAR -->
     <div class="fp-top-bar">
       <button class="fp-back" onclick="showPage('songs')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
       </button>
-      <span class="fp-now-label">NOW PLAYING</span>
-      <button class="fp-more" onclick="void 0">···</button>
+      <span class="fp-now-label">Now Playing</span>
+      <button class="fp-more">···</button>
     </div>
 
-    <div class="fp-disc-area" id="fp-disc-area">
-      <canvas id="wave-canvas" class="fp-wave-canvas" width="260" height="260"></canvas>
+    <!-- DISC (sports car photo + waveform ring) -->
+    <div class="fp-disc-area">
+      <canvas id="wave-canvas" class="fp-wave-canvas" width="300" height="300"></canvas>
       <div class="fp-cover-ring">
-        <div class="fp-disc" id="fp-disc">
-          <img id="fp-disc-img" src="" alt="" style="display:none;">
-          <span id="fp-disc-emoji" style="font-size:64px;">🎵</span>
+        <div class="fp-disc paused" id="fp-disc">
+          <img id="fp-disc-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <span class="fp-disc-emoji" id="fp-disc-emoji">🚗</span>
           <div class="fp-disc-hole"></div>
         </div>
       </div>
     </div>
 
+    <!-- TRACK INFO + HEART -->
     <div class="fp-info-row">
       <div class="fp-info-text">
-        <div class="fp-track-title" id="fp-title">Название трека</div>
-        <div class="fp-track-artist" id="fp-artist">Исполнитель</div>
+        <div class="fp-track-title" id="fp-title">Выбери трек</div>
+        <div class="fp-track-artist" id="fp-artist">EXCLUSIVE MUSIC BOT</div>
       </div>
       <button class="fp-heart" id="fp-heart" onclick="likeCurrentTrack(this)">♡</button>
     </div>
 
+    <!-- PROGRESS -->
     <div class="fp-progress-wrap">
-      <input type="range" class="fp-progress" id="fp-seek" min="0" max="100" value="0" oninput="seekTo(this.value)">
+      <input type="range" class="fp-progress" id="fp-seek" min="0" max="100" value="0"
+        oninput="seekTo(this.value)" style="--prog:0%">
     </div>
     <div class="fp-time-row">
       <span class="fp-time" id="fp-time-cur">0:00</span>
       <span class="fp-time" id="fp-time-dur">0:00</span>
     </div>
 
+    <!-- CONTROLS -->
     <div class="fp-controls">
-      <button class="fp-ctrl-btn" id="fp-shuffle" onclick="toggleShuffle()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+      <!-- Shuffle -->
+      <button class="fp-ctrl-btn" id="fp-shuffle" onclick="toggleShuffle()" title="Shuffle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
+          <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
+        </svg>
       </button>
-      <button class="fp-ctrl-btn" onclick="prevTrack()">
-        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <!-- Prev -->
+      <button class="fp-ctrl-btn skip" onclick="prevTrack()">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
+        </svg>
       </button>
+      <!-- Play/Pause — white circle -->
       <button class="fp-play-btn" id="fp-play-btn" onclick="togglePlay()">
-        <svg id="fp-play-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg id="fp-play-icon" viewBox="0 0 24 24" fill="#000">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
       </button>
-      <button class="fp-ctrl-btn" onclick="nextTrack()">
-        <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <!-- Next -->
+      <button class="fp-ctrl-btn skip" onclick="nextTrack()">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+        </svg>
       </button>
-      <button class="fp-ctrl-btn" id="fp-repeat" onclick="toggleRepeat()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      <!-- Repeat -->
+      <button class="fp-ctrl-btn" id="fp-repeat" onclick="toggleRepeat()" title="Repeat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="17 1 21 5 17 9"/>
+          <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+          <polyline points="7 23 3 19 7 15"/>
+          <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+        </svg>
       </button>
     </div>
 
+    <!-- VOLUME -->
     <div class="fp-vol-row">
-      <span class="fp-vol-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg></span>
+      <span class="fp-vol-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        </svg>
+      </span>
       <input type="range" class="fp-vol" id="fp-vol" min="0" max="100" value="80" oninput="setVol(this.value)">
-      <span class="fp-vol-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>
+      <span class="fp-vol-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+      </span>
     </div>
-    <div class="fp-source" id="fp-source">Exclusive Music</div>
+    <div class="fp-source" id="fp-source">EXCLUSIVE · 170 ТРЕКОВ</div>
 
   </div>
   <!-- Car scene -->
@@ -976,7 +1151,7 @@ audio.addEventListener('timeupdate', function() {
   if (!audio.duration) return;
   const pct = (audio.currentTime / audio.duration) * 100;
   const seek = document.getElementById('fp-seek');
-  if (seek && !seek.matches(':active')) seek.value = pct;
+  if (seek && !seek.matches(':active')) { seek.value = pct; seek.style.setProperty('--prog', pct + '%'); }
   document.getElementById('fp-time-cur').textContent = fmtTime(audio.currentTime);
 });
 
@@ -1036,15 +1211,15 @@ function startWave() {
   const canvas = document.getElementById('wave-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const W = 260, H = 260, cx = 130, cy = 130;
+  const W = 300, H = 300, cx = 150, cy = 150;
   const NUM_BARS = 72;
-  const RADIUS = 112;
+  const RADIUS = 130;
 
   let wt = 0;
   if (waveAnimFrame) cancelAnimationFrame(waveAnimFrame);
 
   function drawWave() {
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, 300, 300);
     wt += 0.06;
     for (let i = 0; i < NUM_BARS; i++) {
       const angle = (i / NUM_BARS) * Math.PI * 2 - Math.PI/2;
