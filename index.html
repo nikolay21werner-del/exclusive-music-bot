@@ -145,30 +145,178 @@ body::after{
 
 /* ===== FULL PLAYER ===== */
 #pg-player{
-  background:linear-gradient(180deg,#060b18 0%,#040810 100%);
+  background:#040810;
   padding-bottom:0;
   position:relative;
   overflow:hidden;
 }
-/* Car silhouette bg */
-#pg-player::before{
-  content:'🚗';
+
+/* CAR SCENE */
+.car-scene{
   position:absolute;
-  bottom:80px;right:-20px;
-  font-size:200px;
-  opacity:.04;
-  transform:scaleX(-1);
+  bottom:0;left:0;right:0;
+  height:55%;
   pointer-events:none;
   z-index:0;
-  filter:blur(2px);
+  overflow:hidden;
 }
-/* Road glow */
-#pg-player::after{
+/* Sky glow */
+.car-scene::before{
   content:'';
   position:absolute;
-  bottom:60px;left:0;right:0;height:120px;
-  background:linear-gradient(to top,rgba(0,100,255,.12),transparent);
-  pointer-events:none;z-index:0;
+  top:0;left:0;right:0;height:60%;
+  background:radial-gradient(ellipse 100% 80% at 50% 0%, rgba(0,80,200,.18) 0%, transparent 70%);
+}
+/* Road surface */
+.car-road{
+  position:absolute;
+  bottom:0;left:0;right:0;height:55%;
+  background:linear-gradient(180deg,#060c1a 0%,#080e20 40%,#0a1228 100%);
+  border-top:1px solid rgba(0,100,255,.15);
+}
+/* Road center line */
+.car-road::before{
+  content:'';
+  position:absolute;
+  top:20%;left:50%;transform:translateX(-50%);
+  width:3px;height:80%;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,180,255,.4) 0px,
+    rgba(0,180,255,.4) 20px,
+    transparent 20px,
+    transparent 40px
+  );
+  animation:roadDash 0.4s linear infinite;
+}
+/* Road side lines */
+.car-road::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,
+      transparent 15%,
+      rgba(0,80,255,.08) 50%,
+      rgba(0,60,200,.15) 100%
+    );
+}
+@keyframes roadDash{from{background-position-y:0}to{background-position-y:40px}}
+
+/* Moving road lights */
+.road-lights{
+  position:absolute;
+  bottom:0;left:0;right:0;height:100%;
+  overflow:hidden;
+}
+.road-light{
+  position:absolute;
+  bottom:0;
+  width:2px;
+  background:linear-gradient(to top,rgba(0,200,255,.6),transparent);
+  border-radius:2px;
+  animation:lightMove 1.5s linear infinite;
+}
+@keyframes lightMove{
+  from{transform:perspective(200px) translateZ(0) scaleY(1);opacity:.8}
+  to{transform:perspective(200px) translateZ(100px) scaleY(2);opacity:0}
+}
+
+/* THE CAR */
+.car-wrap{
+  position:absolute;
+  bottom:28%;
+  left:50%;
+  transform:translateX(-50%);
+  width:260px;
+  filter:drop-shadow(0 0 20px rgba(0,150,255,.4)) drop-shadow(0 0 40px rgba(0,80,200,.3));
+  animation:carFloat 3s ease-in-out infinite;
+}
+@keyframes carFloat{
+  0%,100%{transform:translateX(-50%) translateY(0px)}
+  50%{transform:translateX(-50%) translateY(-4px)}
+}
+
+/* Car headlights beam */
+.headlights{
+  position:absolute;
+  bottom:32%;
+  left:50%;
+  transform:translateX(-50%);
+  width:100px;
+  height:80px;
+  background:radial-gradient(ellipse 100% 100% at 50% 0%,rgba(200,230,255,.12) 0%,transparent 70%);
+  filter:blur(8px);
+  pointer-events:none;
+}
+/* Tail lights glow */
+.taillights{
+  position:absolute;
+  bottom:36%;
+  right:calc(50% - 160px);
+  width:60px;height:20px;
+  background:radial-gradient(ellipse,rgba(255,30,30,.5),transparent 70%);
+  filter:blur(6px);
+  animation:tailPulse 1s ease-in-out infinite alternate;
+}
+@keyframes tailPulse{from{opacity:.5}to{opacity:1}}
+
+/* Exhaust smoke */
+.smoke{
+  position:absolute;
+  bottom:34%;
+  right:calc(50% - 175px);
+  display:flex;gap:4px;
+}
+.smoke-puff{
+  width:12px;height:12px;
+  background:rgba(180,200,255,.12);
+  border-radius:50%;
+  filter:blur(4px);
+  animation:smokeAnim 2s ease-out infinite;
+}
+.smoke-puff:nth-child(2){animation-delay:.4s;width:16px;height:16px}
+.smoke-puff:nth-child(3){animation-delay:.8s;width:10px;height:10px}
+@keyframes smokeAnim{
+  0%{transform:translateY(0) translateX(0) scale(1);opacity:.5}
+  100%{transform:translateY(-30px) translateX(-20px) scale(3);opacity:0}
+}
+
+/* Moon */
+.moon{
+  position:absolute;
+  top:8%;right:15%;
+  width:28px;height:28px;
+  background:radial-gradient(circle,rgba(180,220,255,.9) 0%,rgba(100,150,255,.3) 60%,transparent 100%);
+  border-radius:50%;
+  box-shadow:0 0 20px rgba(180,220,255,.4);
+}
+/* Stars */
+.stars{position:absolute;inset:0;pointer-events:none}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 2s ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.2}to{opacity:.8}}
+
+/* Buildings silhouette */
+.city-bg{
+  position:absolute;
+  bottom:50%;left:0;right:0;height:80px;
+  background:
+    linear-gradient(to right,
+      transparent 0%,
+      #060c1a 5%,
+      #060c1a 95%,
+      transparent 100%
+    );
+  clip-path:polygon(
+    0% 100%, 0% 60%, 3% 60%, 3% 40%, 6% 40%, 6% 55%, 9% 55%, 9% 30%, 12% 30%, 12% 50%,
+    15% 50%, 15% 20%, 17% 20%, 17% 35%, 20% 35%, 20% 45%, 23% 45%, 23% 15%, 25% 15%,
+    25% 35%, 28% 35%, 28% 25%, 30% 25%, 30% 40%, 33% 40%, 33% 60%,
+    67% 60%, 67% 40%, 70% 40%, 70% 25%, 72% 25%, 72% 35%, 75% 35%,
+    75% 15%, 77% 15%, 77% 45%, 80% 45%, 80% 35%, 83% 35%, 83% 20%,
+    85% 20%, 85% 50%, 88% 50%, 88% 30%, 91% 30%, 91% 55%, 94% 55%,
+    94% 40%, 97% 40%, 97% 60%, 100% 60%, 100% 100%
+  );
+  opacity:.6;
 }
 .fp-wrap{display:flex;flex-direction:column;align-items:center;padding:14px 24px 100px;min-height:100%;position:relative;z-index:1}
 .fp-topbar{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -340,6 +488,100 @@ input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12p
 
 <!-- PLAYER PAGE -->
 <div class="page" id="pg-player">
+  <!-- CAR SCENE -->
+  <div class="car-scene">
+    <div class="moon"></div>
+    <div class="stars" id="stars"></div>
+    <div class="city-bg"></div>
+    <div class="car-road">
+      <div class="road-lights" id="roadLights"></div>
+    </div>
+    <div class="headlights"></div>
+    <div class="taillights"></div>
+    <div class="smoke">
+      <div class="smoke-puff"></div>
+      <div class="smoke-puff"></div>
+      <div class="smoke-puff"></div>
+    </div>
+    <!-- SVG CAR (Mercedes style) -->
+    <div class="car-wrap">
+      <svg viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <!-- Car body -->
+        <defs>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1a3a6a"/>
+            <stop offset="50%" stop-color="#0d2040"/>
+            <stop offset="100%" stop-color="#060e20"/>
+          </linearGradient>
+          <linearGradient id="glassGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4488cc" stop-opacity=".7"/>
+            <stop offset="100%" stop-color="#224488" stop-opacity=".4"/>
+          </linearGradient>
+          <linearGradient id="rimGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#2266aa"/>
+            <stop offset="100%" stop-color="#0a1a40"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Shadow -->
+        <ellipse cx="130" cy="95" rx="110" ry="6" fill="rgba(0,50,150,.3)"/>
+        <!-- Lower body / skirt -->
+        <path d="M30 72 Q40 76 80 78 L180 78 Q220 76 230 72 L225 68 Q200 70 130 70 Q60 70 35 68 Z" fill="#060e1a"/>
+        <!-- Main body -->
+        <path d="M25 68 Q35 65 50 60 L60 45 Q75 32 95 28 L165 28 Q185 32 200 45 L210 60 Q225 65 235 68 L235 75 Q200 78 130 78 Q60 78 25 75 Z" fill="url(#bodyGrad)"/>
+        <!-- Roof/glass area -->
+        <path d="M62 60 L68 42 Q80 30 98 27 L162 27 Q180 30 192 42 L198 60 Z" fill="url(#glassGrad)"/>
+        <!-- Roof top -->
+        <path d="M68 42 Q80 30 98 27 L162 27 Q180 30 192 42 L185 42 Q172 32 162 30 L98 30 Q88 32 75 42 Z" fill="#0d2245"/>
+        <!-- Window divider (B-pillar) -->
+        <rect x="128" y="28" width="4" height="32" fill="#08162e" opacity=".8"/>
+        <!-- Door lines -->
+        <path d="M58 60 L62 68" stroke="#0a1830" stroke-width="1.5" opacity=".6"/>
+        <path d="M130 60 L130 68" stroke="#0a1830" stroke-width="1.5" opacity=".6"/>
+        <path d="M200 60 L198 68" stroke="#0a1830" stroke-width="1.5" opacity=".6"/>
+        <!-- Body accent line -->
+        <path d="M35 58 Q80 54 130 54 Q180 54 225 58" stroke="#1a4080" stroke-width="1" opacity=".7"/>
+        <!-- Blue neon underline -->
+        <path d="M40 74 Q130 76 220 74" stroke="#00aaff" stroke-width="1.5" opacity=".6" filter="url(#glow)"/>
+        <!-- Front headlights -->
+        <path d="M222 55 L235 58 L235 65 L222 63 Z" fill="#aaccff" opacity=".9" filter="url(#glow)"/>
+        <path d="M222 55 L235 58 L235 65 L222 63 Z" fill="#00aaff" opacity=".5" filter="url(#glow)"/>
+        <!-- Headlight DRL -->
+        <path d="M220 57 L233 60" stroke="#00ccff" stroke-width="2" opacity=".9" stroke-linecap="round" filter="url(#glow)"/>
+        <!-- Tail lights -->
+        <path d="M25 55 L38 52 L38 64 L25 62 Z" fill="#cc0000" opacity=".7"/>
+        <path d="M25 55 L38 52 L38 64 L25 62 Z" fill="#ff3300" opacity=".4" filter="url(#glow)"/>
+        <!-- Rear DRL -->
+        <path d="M27 57 L37 54" stroke="#ff2200" stroke-width="1.5" opacity=".8" stroke-linecap="round"/>
+        <!-- Front wheel -->
+        <circle cx="185" cy="78" r="16" fill="#0a1428"/>
+        <circle cx="185" cy="78" r="16" stroke="#1a3a6a" stroke-width="2"/>
+        <circle cx="185" cy="78" r="11" fill="url(#rimGrad)" stroke="#2266aa" stroke-width="1"/>
+        <circle cx="185" cy="78" r="5" fill="#0d2040" stroke="#4488cc" stroke-width="1"/>
+        <line x1="185" y1="67" x2="185" y2="89" stroke="#2266aa" stroke-width="1.5" opacity=".7"/>
+        <line x1="174" y1="78" x2="196" y2="78" stroke="#2266aa" stroke-width="1.5" opacity=".7"/>
+        <line x1="177" y1="70" x2="193" y2="86" stroke="#2266aa" stroke-width="1" opacity=".5"/>
+        <line x1="177" y1="86" x2="193" y2="70" stroke="#2266aa" stroke-width="1" opacity=".5"/>
+        <!-- Rear wheel -->
+        <circle cx="75" cy="78" r="16" fill="#0a1428"/>
+        <circle cx="75" cy="78" r="16" stroke="#1a3a6a" stroke-width="2"/>
+        <circle cx="75" cy="78" r="11" fill="url(#rimGrad)" stroke="#2266aa" stroke-width="1"/>
+        <circle cx="75" cy="78" r="5" fill="#0d2040" stroke="#4488cc" stroke-width="1"/>
+        <line x1="75" y1="67" x2="75" y2="89" stroke="#2266aa" stroke-width="1.5" opacity=".7"/>
+        <line x1="64" y1="78" x2="86" y2="78" stroke="#2266aa" stroke-width="1.5" opacity=".7"/>
+        <line x1="67" y1="70" x2="83" y2="86" stroke="#2266aa" stroke-width="1" opacity=".5"/>
+        <line x1="67" y1="86" x2="83" y2="70" stroke="#2266aa" stroke-width="1" opacity=".5"/>
+        <!-- Hood detail -->
+        <path d="M195 50 Q215 50 230 55 L228 60 Q210 56 195 56 Z" fill="#0a1830" opacity=".5"/>
+        <!-- Mercedes emblem area -->
+        <circle cx="232" cy="46" r="5" fill="#0d1e3a" stroke="#2255aa" stroke-width="1"/>
+        <text x="232" y="50" text-anchor="middle" font-size="6" fill="#4488cc" font-weight="bold">✦</text>
+      </svg>
+    </div>
+  </div>
   <div class="fp-wrap">
     <div class="fp-topbar">
       <button onclick="showPage('songs')">‹</button>
@@ -386,6 +628,7 @@ input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12p
       <span class="vol-icon">🔊</span>
     </div>
     <div class="fp-counter" id="fp-counter"></div>
+  </div>
   </div>
 </div>
 
@@ -891,6 +1134,34 @@ function showPage(name){
   const nb=document.getElementById('nav-'+name);if(nb)nb.classList.add('active');
   document.getElementById('mini').style.display=name==='player'?'none':'';
 }
+
+// INIT STARS & ROAD LIGHTS
+function initCarScene(){
+  // Stars
+  const starsEl = document.getElementById('stars');
+  if(starsEl){
+    let s='';
+    for(let i=0;i<40;i++){
+      const x=Math.random()*100, y=Math.random()*60;
+      const delay=Math.random()*2, size=Math.random()>.7?3:2;
+      s+=`<div class="star" style="left:${x}%;top:${y}%;width:${size}px;height:${size}px;animation-delay:${delay}s"></div>`;
+    }
+    starsEl.innerHTML=s;
+  }
+  // Road lights (moving lines on sides of road)
+  const lightsEl = document.getElementById('roadLights');
+  if(lightsEl){
+    let l='';
+    const positions=[10,20,80,90,15,85,5,95];
+    positions.forEach((x,i)=>{
+      const h=20+Math.random()*40;
+      const delay=i*0.2;
+      l+=`<div class="road-light" style="left:${x}%;height:${h}%;animation-delay:${delay}s;animation-duration:${1+Math.random()*.5}s"></div>`;
+    });
+    lightsEl.innerHTML=l;
+  }
+}
+initCarScene();
 
 // INIT
 renderSongs(TRACKS);
