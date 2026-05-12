@@ -1192,7 +1192,7 @@ let vkUser = JSON.parse(localStorage.getItem('vk_user') || 'null');
 let vkTracks = [];
 
 function vkLogin(){
-  const scope = 'audio';
+  const scope = '';
   const redirectUri = encodeURIComponent(window.location.href.split('?')[0]);
   const url = `https://oauth.vk.com/authorize?client_id=${VK_APP_ID}&display=mobile&redirect_uri=${redirectUri}&scope=${scope}&response_type=token&v=5.131`;
   // Open VK OAuth in popup/redirect
@@ -1266,25 +1266,49 @@ async function vkLoadUser(){
 }
 
 async function vkLoadAudio(){
-  try{
-    const res = await fetch(`https://api.vk.com/method/audio.get?count=200&access_token=${vkToken}&v=5.131`);
-    const data = await res.json();
-    if(data.error){
-      // Audio API may be restricted
-      document.getElementById('vkTrackList').innerHTML=`
-        <div class="vk-error">
-          ⚠️ ВКонтакте ограничил доступ к аудио через API.<br><br>
-          <b>Альтернатива:</b> найди любой трек через вкладку 🔍 Search — там 90M+ треков.
-        </div>`;
-      document.getElementById('vkTrackCount').textContent = '';
-      return;
-    }
-    vkTracks = (data.response && data.response.items) || [];
-    document.getElementById('vkTrackCount').textContent = vkTracks.length + ' треков';
-    renderVkTracks(vkTracks);
-  }catch(e){
-    document.getElementById('vkTrackList').innerHTML='<div class="vk-error">⚠️ Ошибка загрузки аудио.</div>';
+  // VK закрыл Audio API для новых приложений с 2020 года
+  // Показываем красивый экран с поиском
+  document.getElementById('vkTrackCount').textContent = '';
+  document.getElementById('vkTrackList').innerHTML = `
+    <div style="padding:16px 0">
+      <div style="background:rgba(39,135,245,.08);border:1px solid rgba(39,135,245,.2);border-radius:14px;padding:16px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:#2787F5;margin-bottom:6px">🎵 ВКонтакте Music</div>
+        <div style="font-size:12px;color:#2a5070;line-height:1.6">ВКонтакте закрыл доступ к аудио для сторонних приложений. Но ты можешь найти любой трек через глобальный поиск — 90M+ треков из Deezer и iTunes.</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:#2a5070;letter-spacing:1px;margin-bottom:10px">БЫСТРЫЙ ПОИСК</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="goToSearch()">
+          <span style="font-size:22px">🌍</span>
+          <div>
+            <div style="font-size:14px;font-weight:700">Поиск по всему миру</div>
+            <div style="font-size:11px;color:#2a5070;margin-top:2px">Deezer + iTunes · 90M+ треков</div>
+          </div>
+          <span style="margin-left:auto;color:#1a4060;font-size:18px">›</span>
+        </div>
+        <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="showPage('songs')">
+          <span style="font-size:22px">🔥</span>
+          <div>
+            <div style="font-size:14px;font-weight:700">Exclusive Music</div>
+            <div style="font-size:11px;color:#2a5070;margin-top:2px">170 эксклюзивных ремиксов</div>
+          </div>
+          <span style="margin-left:auto;color:#1a4060;font-size:18px">›</span>
+        </div>
+      </div>
+      <div style="margin-top:20px;font-size:11px;color:#1a3050;text-align:center;line-height:1.8">
+        Ты вошёл как <b id="vkConnectedName" style="color:#2787F5"></b><br>
+        ВК профиль подключён ✓
+      </div>
+    </div>`;
+  // Set connected name
+  if(vkUser){
+    const el = document.getElementById('vkConnectedName');
+    if(el) el.textContent = vkUser.first_name + ' ' + vkUser.last_name;
   }
+}
+
+function goToSearch(){
+  showPage('search');
+  document.getElementById('searchInput').focus();
 }
 
 function renderVkTracks(tracks){
