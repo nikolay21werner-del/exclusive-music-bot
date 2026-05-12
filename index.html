@@ -102,10 +102,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-ap
 .genre-card-count{font-size:12px;color:rgba(255,255,255,0.65);margin-top:3px;}
 
 /* ── PAGE 4: PLAYER ─────────────────────────────────── */
-#pg-player{background:#000;overflow:hidden;padding-bottom:0;display:flex;flex-direction:column;height:100%;}
+#pg-player{background:#000;overflow:hidden;padding-bottom:0;display:flex;flex-direction:column;height:100%;position:relative;}
 
-.player-bg{position:absolute;inset:0;z-index:0;}
-.player-bg-img{width:100%;height:100%;object-fit:cover;filter:blur(40px) brightness(0.35) saturate(1.4);transform:scale(1.1);}
+.player-bg{position:absolute;inset:0;z-index:0;overflow:hidden;}
+.player-bg-img{position:absolute;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);object-fit:cover;filter:blur(60px) brightness(0.28) saturate(2.5);}
 .player-bg-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.7) 60%,rgba(0,0,0,0.9) 100%);}
 
 .player-inner{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:0 24px;overflow:hidden;}
@@ -118,11 +118,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-ap
 .player-circle-btn:active{background:rgba(255,255,255,0.2);}
 
 /* Album art */
-.player-art-wrap{flex-shrink:0;display:flex;justify-content:center;padding:8px 0 20px;}
-.player-art{width:min(84vw,330px);height:min(84vw,330px);border-radius:16px;overflow:hidden;
-  box-shadow:0 24px 60px rgba(0,0,0,0.7);
-  transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);}
-.player-art.paused{transform:scale(0.92);}
+.player-art-wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:4px 0;}
+.player-art{width:min(88vw,340px);height:min(88vw,340px);border-radius:18px;overflow:hidden;
+  box-shadow:0 28px 70px rgba(0,0,0,0.8),0 0 60px rgba(0,80,200,0.2);
+  transition:transform 0.4s cubic-bezier(.34,1.56,.64,1);}
+.player-art.paused{transform:scale(0.90);}
 .player-art.playing{transform:scale(1.0);}
 .player-art img{width:100%;height:100%;object-fit:cover;display:block;}
 
