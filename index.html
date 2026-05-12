@@ -7,222 +7,274 @@
 <script src="https://telegram.org/js/telegram-web-app.js" async></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;background:#1a1a1a;color:#fff;display:flex;flex-direction:column}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif}
+body{background:#12121f;color:#fff;display:flex;flex-direction:column}
 button{cursor:pointer;background:none;border:none;color:inherit;font:inherit}
-input{font:inherit}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#444;border-radius:4px}
+input{font:inherit;color:inherit}
+::-webkit-scrollbar{display:none}
 
+/* VARIABLES */
+:root{--pink:#FF2D78;--cyan:#00D4FF;--dark:#12121f;--card:#1e1e30;--card2:#252538}
 
+/* ===== BOTTOM NAV ===== */
+.bnav{display:flex;background:#0d0d1a;border-top:1px solid #2a2a3d;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.bnav-btn{flex:1;padding:10px 0 8px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#555;transition:color .2s;letter-spacing:.3px}
+.bnav-btn svg{width:22px;height:22px;fill:currentColor}
+.bnav-btn.active{color:var(--pink)}
 
-/* NAV TABS */
-.nav{display:flex;background:#111;border-bottom:1px solid #2a2a2a;flex-shrink:0}
-.nav-btn{flex:1;padding:14px 0 10px;font-size:11px;color:#888;display:flex;flex-direction:column;align-items:center;gap:4px;transition:color .2s;border-bottom:2px solid transparent}
-.nav-btn svg{width:20px;height:20px;fill:currentColor}
-.nav-btn.active{color:#FFCC00;border-bottom-color:#FFCC00}
-
-/* PAGES */
-.page{flex:1;overflow-y:auto;overflow-x:hidden;display:none;flex-direction:column;padding-bottom:72px}
+/* ===== PAGES ===== */
+.page{flex:1;overflow-y:auto;overflow-x:hidden;display:none;flex-direction:column;-webkit-overflow-scrolling:touch;padding-bottom:80px}
 .page.active{display:flex}
 
-/* HEADER */
-.hdr{padding:16px 16px 8px;flex-shrink:0}
-.hdr-title{font-size:22px;font-weight:700;letter-spacing:-0.5px}
-.hdr-title span{color:#FFCC00}
-.hdr-sub{font-size:12px;color:#666;margin-top:2px}
+/* ===== HEADER ===== */
+.pg-hdr{padding:20px 20px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pg-hdr h1{font-size:28px;font-weight:800;letter-spacing:-.5px}
+.pg-hdr h1 span{color:var(--pink)}
+.hdr-icons{display:flex;gap:14px}
+.hdr-icon{width:36px;height:36px;background:var(--card);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
 
-/* GENRE CHIPS */
-.chips{display:flex;gap:8px;padding:8px 16px 12px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;background:#2a2a2a;color:#aaa;transition:all .2s;white-space:nowrap}
-.chip.active{background:#FFCC00;color:#000}
+/* ===== TABS ===== */
+.tabs{display:flex;padding:0 20px 12px;gap:8px;flex-shrink:0}
+.tab{padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;color:#555;background:var(--card);transition:all .2s;white-space:nowrap}
+.tab.active{background:var(--pink);color:#fff}
 
-/* TRACK LIST */
-.tlist{flex:1;padding:0 0 8px}
-.trow{display:flex;align-items:center;padding:10px 16px;gap:12px;transition:background .15s;cursor:pointer;position:relative}
-.trow:active{background:#2a2a2a}
-.trow.playing .t-title{color:#FFCC00}
-.trow.playing .t-cover{box-shadow:0 0 0 2px #FFCC00}
-.t-cover{width:46px;height:46px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative;overflow:hidden;background:#2a2a2a}
-.t-cover img{width:100%;height:100%;object-fit:cover;border-radius:10px}
-.t-cover .cover-letter{font-size:16px;font-weight:700;color:rgba(255,255,255,.8)}
-.t-cover .play-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;border-radius:10px}
-.trow.playing .play-overlay{opacity:1}
+/* ===== TRACK ROW ===== */
+.trow{display:flex;align-items:center;padding:10px 20px;gap:14px;cursor:pointer;transition:background .15s}
+.trow:active{background:rgba(255,45,120,.08)}
+.trow.playing .t-title{color:var(--pink)}
+.t-num{width:20px;font-size:13px;color:#444;text-align:center;flex-shrink:0}
+.trow.playing .t-num{color:var(--pink)}
+.t-cover{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;position:relative;overflow:hidden}
+.t-cover img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.trow.playing .t-cover{box-shadow:0 0 0 2px var(--pink),0 0 12px rgba(255,45,120,.4)}
 .t-info{flex:1;min-width:0}
-.t-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
-.t-artist{font-size:12px;color:#777;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.t-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.t-dur{font-size:12px;color:#555}
-.t-heart{font-size:16px;color:#555;transition:color .2s}
-.t-heart.liked{color:#FC3F1D}
+.t-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-sub{font-size:12px;color:#555;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.t-dur{font-size:12px;color:#444}
+.t-more{font-size:18px;color:#333;padding:4px}
+.t-heart{font-size:15px;transition:color .2s}
+.t-heart.liked{color:var(--pink)}
 
-/* SEARCH PAGE */
-.search-wrap{padding:12px 16px 8px;flex-shrink:0}
-.search-box{display:flex;align-items:center;background:#2a2a2a;border-radius:14px;padding:0 14px;gap:10px;border:1.5px solid transparent;transition:border-color .2s}
-.search-box:focus-within{border-color:#FFCC00}
-.search-box input{flex:1;background:none;border:none;outline:none;padding:14px 0;font-size:16px;color:#fff}
-.search-box input::placeholder{color:#444}
-.search-box svg{width:20px;height:20px;fill:#666;flex-shrink:0}
-.search-clear{font-size:18px;color:#555;cursor:pointer;padding:4px;display:none}
-.search-stats{padding:4px 16px 8px;font-size:11px;color:#555;display:flex;gap:12px;flex-wrap:wrap}
-.search-stat{background:#222;border-radius:6px;padding:3px 8px;font-size:11px;color:#777}
-.search-stat span{color:#FFCC00;font-weight:600}
-.search-hint{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:#555;font-size:14px;line-height:1.8;text-align:center}
-.search-hint .big{font-size:48px;margin-bottom:16px}
-.search-hint .tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
-.search-hint .tag{background:#2a2a2a;color:#888;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;transition:all .2s}
-.search-hint .tag:active{background:#FFCC00;color:#000}
-.s-section{padding:12px 16px 4px;font-size:13px;font-weight:700;color:#888;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
-.s-section-line{flex:1;height:1px;background:#2a2a2a}
-.s-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:5px}
-.s-badge-ex{background:#FFCC00;color:#000}
-.s-badge-dz{background:#E2175B;color:#fff}
-.s-badge-it{background:#FC3C44;color:#fff}
-.spinner{text-align:center;padding:50px 20px;color:#FFCC00;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:12px}
-.spin-ring{width:36px;height:36px;border:3px solid #333;border-top-color:#FFCC00;border-radius:50%;animation:spin .7s linear infinite}
+/* ===== GENRE GRID ===== */
+.genre-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 20px}
+.genre-card{border-radius:16px;padding:16px;cursor:pointer;position:relative;overflow:hidden;min-height:90px;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .2s}
+.genre-card:active{transform:scale(.97)}
+.genre-card .gc-name{font-size:18px;font-weight:800;position:relative;z-index:1}
+.genre-card .gc-count{font-size:11px;opacity:.7;position:relative;z-index:1;margin-top:2px}
+.genre-card::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.2)}
+.gc-emoji{position:absolute;right:12px;top:12px;font-size:36px;opacity:.5;z-index:0}
+
+/* ===== SEARCH ===== */
+.search-bar{padding:8px 20px 12px;flex-shrink:0}
+.search-input-wrap{background:var(--card);border-radius:14px;display:flex;align-items:center;padding:0 14px;gap:10px;border:1.5px solid transparent;transition:border-color .2s}
+.search-input-wrap:focus-within{border-color:var(--pink)}
+.search-input-wrap input{flex:1;background:none;border:none;outline:none;padding:13px 0;font-size:15px}
+.search-input-wrap input::placeholder{color:#444}
+.search-icon{font-size:16px;color:#555}
+.search-clear{font-size:16px;color:#555;display:none;cursor:pointer}
+.search-section-title{padding:12px 20px 6px;font-size:13px;font-weight:700;color:#888;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between}
+.search-section-title span{color:var(--pink);font-size:12px;font-weight:600}
+.search-hint{display:flex;flex-direction:column;align-items:center;padding:50px 20px;color:#444;font-size:14px;text-align:center;gap:12px}
+.search-hint .sh-icon{font-size:48px}
+.search-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
+.search-tag{background:var(--card);color:#888;padding:7px 16px;border-radius:20px;font-size:13px;cursor:pointer;transition:all .2s}
+.search-tag:active{background:var(--pink);color:#fff}
+.src-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;margin-left:5px;vertical-align:middle}
+.badge-ex{background:var(--pink);color:#fff}
+.badge-dz{background:#E2175B;color:#fff}
+.badge-it{background:#FC3C44;color:#fff}
+.search-stats{display:none;flex-wrap:wrap;gap:8px;padding:0 20px 10px}
+.search-stat{background:var(--card);border-radius:8px;padding:4px 10px;font-size:11px;color:#666}
+.search-stat b{color:var(--cyan)}
+.spinner{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;gap:12px;color:#555;font-size:13px}
+.spin-ring{width:32px;height:32px;border:3px solid #2a2a3d;border-top-color:var(--pink);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.no-results{text-align:center;padding:40px 20px;color:#555;font-size:14px}
-.load-more{text-align:center;padding:16px;color:#FFCC00;font-size:13px;cursor:pointer;font-weight:600}
-.load-more:active{opacity:.7}
+.no-results{text-align:center;padding:50px 20px;color:#444;font-size:14px}
 
-/* FULL PLAYER PAGE */
-#pg-player{background:linear-gradient(180deg,#1f1f1f 0%,#111 100%);padding-bottom:0}
-.fp-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 20px 100px;min-height:100%;position:relative}
-.fp-source{font-size:11px;color:#666;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
-.fp-cover-wrap{position:relative;width:220px;height:220px;margin-bottom:24px}
-.fp-cover{width:220px;height:220px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:60px;position:relative;overflow:hidden;flex-shrink:0}
-.fp-cover img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.fp-cover .cover-emoji{font-size:60px}
-.fp-waveform{position:absolute;inset:-20px;border-radius:50%;pointer-events:none}
-canvas#waveCanvas{position:absolute;inset:-20px}
-.fp-nav-arrows{position:absolute;top:50%;transform:translateY(-50%);width:calc(100% + 60px);left:-30px;display:flex;justify-content:space-between;pointer-events:none}
-.fp-arrow{pointer-events:all;width:40px;height:40px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background .2s}
-.fp-arrow:active{background:rgba(255,255,255,.2)}
-.fp-info{text-align:center;width:100%;margin-bottom:20px}
-.fp-track-title{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:6px}
-.fp-track-artist{font-size:14px;color:#888}
-.fp-prog-wrap{width:100%;margin-bottom:8px}
-.fp-prog{width:100%;height:4px;background:#333;border-radius:4px;cursor:pointer;position:relative;appearance:none;outline:none;-webkit-appearance:none}
-.fp-prog::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:#FFCC00;border-radius:50%;cursor:pointer;margin-top:-5px}
-.fp-prog::-webkit-slider-runnable-track{background:linear-gradient(to right,#FFCC00 var(--prog,0%),#333 var(--prog,0%));height:4px;border-radius:4px}
-.fp-times{display:flex;justify-content:space-between;font-size:11px;color:#555;margin-bottom:20px}
-.fp-controls{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:20px}
-.ctrl-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#aaa;transition:all .2s}
-.ctrl-btn:active{transform:scale(.9)}
-.ctrl-main{width:60px;height:60px;background:#FFCC00;border-radius:50%;font-size:26px;color:#000;box-shadow:0 4px 20px rgba(255,204,0,.4)}
-.ctrl-main:active{transform:scale(.93)}
-.ctrl-active{color:#FFCC00}
-.fp-vol-wrap{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:10px}
-.fp-vol-wrap svg{width:18px;height:18px;fill:#555;flex-shrink:0}
-.fp-vol{flex:1;height:4px;background:#333;border-radius:4px;cursor:pointer;appearance:none;-webkit-appearance:none;outline:none}
-.fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:#aaa;border-radius:50%;cursor:pointer}
-.fp-counter{font-size:12px;color:#555;text-align:center}
+/* ===== FULL PLAYER ===== */
+#pg-player{background:linear-gradient(160deg,#1a0a1e 0%,#0d0d1a 50%,#0a1020 100%);padding-bottom:0}
+.fp-wrap{display:flex;flex-direction:column;align-items:center;padding:16px 24px 100px;min-height:100%}
+.fp-topbar{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.fp-topbar .fp-label{font-size:11px;font-weight:700;letter-spacing:2px;color:#555;text-transform:uppercase}
+.fp-topbar button{font-size:20px;color:#555;padding:4px}
+.fp-cover-wrap{position:relative;width:240px;height:240px;margin-bottom:28px}
+.fp-disc{width:240px;height:240px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0}
+.fp-disc img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.fp-disc .disc-emoji{font-size:70px}
+.fp-disc.spinning{animation:discSpin 8s linear infinite}
+.fp-disc.paused{animation-play-state:paused}
+@keyframes discSpin{to{transform:rotate(360deg)}}
+canvas#waveCanvas{position:absolute;inset:-24px;pointer-events:none}
+.fp-nav-arrows{position:absolute;top:50%;transform:translateY(-50%);width:calc(100% + 64px);left:-32px;display:flex;justify-content:space-between;pointer-events:none}
+.fp-arrow{pointer-events:all;width:38px;height:38px;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;transition:background .2s}
+.fp-arrow:active{background:rgba(255,45,120,.3)}
+.fp-info{text-align:center;width:100%;margin-bottom:24px}
+.fp-track-title{font-size:22px;font-weight:800;line-height:1.2;margin-bottom:6px}
+.fp-track-artist{font-size:14px;color:#777}
+.fp-track-source{font-size:10px;color:#444;margin-top:4px;letter-spacing:1px;text-transform:uppercase}
+/* Progress */
+.fp-prog-wrap{width:100%;margin-bottom:6px;position:relative}
+input[type=range].fp-prog{width:100%;-webkit-appearance:none;appearance:none;height:4px;background:var(--card2);border-radius:4px;outline:none;cursor:pointer}
+input[type=range].fp-prog::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(to right,var(--pink) var(--prog,0%),var(--card2) var(--prog,0%))}
+input[type=range].fp-prog::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:#fff;border-radius:50%;margin-top:-5px;box-shadow:0 0 8px rgba(255,45,120,.6)}
+.fp-times{display:flex;justify-content:space-between;font-size:11px;color:#444;margin-bottom:22px}
+/* Controls */
+.fp-controls{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:24px;width:100%}
+.ctrl-side{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#555;transition:color .2s}
+.ctrl-side.on{color:var(--pink)}
+.ctrl-prev,.ctrl-next{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#aaa}
+.ctrl-play{width:66px;height:66px;background:linear-gradient(135deg,var(--pink),#c2185b);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;box-shadow:0 6px 24px rgba(255,45,120,.5);transition:transform .15s}
+.ctrl-play:active{transform:scale(.93)}
+/* Volume */
+.fp-vol-row{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:12px}
+.vol-icon{font-size:16px;color:#444}
+input[type=range].fp-vol{flex:1;-webkit-appearance:none;appearance:none;height:4px;background:var(--card2);border-radius:4px;outline:none;cursor:pointer}
+input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:#aaa;border-radius:50%}
+.fp-counter{font-size:11px;color:#444;text-align:center}
 
-/* MINI PLAYER */
-.mini{position:fixed;bottom:0;left:0;right:0;height:64px;background:rgba(18,18,18,.97);backdrop-filter:blur(20px);border-top:1px solid #2a2a2a;display:flex;align-items:center;padding:0 12px;gap:10px;z-index:100;cursor:pointer;transform:translateY(100%);transition:transform .3s}
+/* ===== MINI PLAYER ===== */
+.mini{position:fixed;bottom:56px;left:0;right:0;background:rgba(14,14,26,.97);backdrop-filter:blur(20px);border-top:1px solid #2a2a3d;display:flex;align-items:center;padding:10px 16px;gap:12px;z-index:200;cursor:pointer;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
 .mini.visible{transform:translateY(0)}
-.mini-prog{position:absolute;top:0;left:0;right:0;height:2px;background:#333}
-.mini-prog-bar{height:100%;background:#FFCC00;transition:width .5s linear;width:0%}
-.mini-cover{width:44px;height:44px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden}
-.mini-cover img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.mini-prog{position:absolute;top:0;left:0;right:0;height:2px;background:#2a2a3d}
+.mini-prog-bar{height:100%;background:linear-gradient(to right,var(--pink),var(--cyan));transition:width .5s linear;width:0%}
+.mini-disc{width:44px;height:44px;border-radius:50%;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px}
+.mini-disc img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.mini-disc.spinning{animation:discSpin 6s linear infinite}
+.mini-disc.paused{animation-play-state:paused}
 .mini-info{flex:1;min-width:0}
-.mini-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mini-artist{font-size:11px;color:#777;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mini-play{width:40px;height:40px;background:#FFCC00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000;flex-shrink:0}
-.mini-next{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#888;flex-shrink:0}
+.mini-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-artist{font-size:11px;color:#555;margin-top:2px}
+.mini-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#888;flex-shrink:0}
+.mini-btn.play{background:var(--pink);border-radius:50%;color:#fff;font-size:18px;box-shadow:0 2px 12px rgba(255,45,120,.4)}
 
-/* genre gradients */
-.g-remix{background:linear-gradient(135deg,#FF6B6B,#FF8E53)}
-.g-love{background:linear-gradient(135deg,#FF4B8B,#FF8FB1)}
-.g-hiphop{background:linear-gradient(135deg,#667EEA,#764BA2)}
-.g-electronic{background:linear-gradient(135deg,#00B4DB,#0083B0)}
-.g-winter{background:linear-gradient(135deg,#83A4D4,#B6FBFF)}
-.g-city{background:linear-gradient(135deg,#606c88,#3f4c6b)}
+/* ===== GENRE COLORS ===== */
+.g-remix{background:linear-gradient(135deg,#FF2D78,#FF6B6B)}
+.g-love{background:linear-gradient(135deg,#e91e63,#FF4081)}
+.g-hiphop{background:linear-gradient(135deg,#7C4DFF,#448AFF)}
+.g-electronic{background:linear-gradient(135deg,#00BCD4,#00D4FF)}
+.g-winter{background:linear-gradient(135deg,#5C6BC0,#42A5F5)}
+.g-city{background:linear-gradient(135deg,#546E7A,#78909C)}
 
-/* SCROLL FIX */
-.page{-webkit-overflow-scrolling:touch}
+/* Section divider */
+.s-sep{padding:14px 20px 6px;font-size:13px;font-weight:700;color:#888;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.s-sep::after{content:'';flex:1;height:1px;background:#1e1e30}
+
+/* Playlists */
+.playlist-cards{display:flex;flex-direction:column;gap:0}
+.pl-row{display:flex;align-items:center;padding:12px 20px;gap:14px;cursor:pointer;transition:background .15s}
+.pl-row:active{background:rgba(255,45,120,.08)}
+.pl-thumb{width:54px;height:54px;border-radius:12px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px}
+.pl-info{flex:1;min-width:0}
+.pl-name{font-size:15px;font-weight:700}
+.pl-meta{font-size:12px;color:#555;margin-top:2px}
+.pl-arrow{font-size:16px;color:#333}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<div class="nav">
-  <button class="nav-btn active" onclick="showPage('library')" id="nav-library">
-    <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>
-    Моя музыка
-  </button>
-  <button class="nav-btn" onclick="showPage('search')" id="nav-search">
-    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
-    Поиск
-  </button>
-  <button class="nav-btn" onclick="showPage('player')" id="nav-player">
-    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-    Плеер
-  </button>
+<!-- ===== SONGS PAGE ===== -->
+<div class="page active" id="pg-songs">
+  <div class="pg-hdr">
+    <h1>Songs</h1>
+    <div class="hdr-icons">
+      <div class="hdr-icon">🔍</div>
+      <div class="hdr-icon">⋮</div>
+    </div>
+  </div>
+  <div class="tabs" id="songs-tabs">
+    <div class="tab active" onclick="filterSongs('all',this)">Songs</div>
+    <div class="tab" onclick="filterSongs('remix',this)">🔥 Remix</div>
+    <div class="tab" onclick="filterSongs('love',this)">❤️ Love</div>
+    <div class="tab" onclick="filterSongs('hiphop',this)">🎤 Hip-Hop</div>
+    <div class="tab" onclick="filterSongs('electronic',this)">⚡ Electronic</div>
+    <div class="tab" onclick="filterSongs('winter',this)">❄️ Winter</div>
+  </div>
+  <div id="songs-list"></div>
 </div>
 
-<!-- LIBRARY PAGE -->
-<div class="page active" id="pg-library">
-  <div class="hdr">
-    <div class="hdr-title">EXCLUSIVE <span>MUSIC</span></div>
-    <div class="hdr-sub">170 эксклюзивных треков</div>
-  </div>
-  <div class="chips" id="chips">
-    <div class="chip active" onclick="filterGenre('all',this)">Все</div>
-    <div class="chip" onclick="filterGenre('remix',this)">🔥 Remix</div>
-    <div class="chip" onclick="filterGenre('love',this)">❤️ Love</div>
-    <div class="chip" onclick="filterGenre('hiphop',this)">🎤 Hip-Hop</div>
-    <div class="chip" onclick="filterGenre('electronic',this)">⚡ Electronic</div>
-    <div class="chip" onclick="filterGenre('winter',this)">❄️ Winter</div>
-    <div class="chip" onclick="filterGenre('city',this)">🏙️ City</div>
-  </div>
-  <div class="tlist" id="tlist"></div>
-</div>
-
-<!-- SEARCH PAGE -->
+<!-- ===== SEARCH PAGE ===== -->
 <div class="page" id="pg-search">
-  <div class="hdr">
-    <div class="hdr-title">🌍 Глобальный <span>поиск</span></div>
-    <div class="hdr-sub">Любая песня — 90+ миллионов треков</div>
-  </div>
-  <div class="search-wrap">
-    <div class="search-box">
-      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
+  <div class="pg-hdr"><h1>Search</h1></div>
+  <div class="search-bar">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
       <input type="search" id="searchInput" placeholder="Исполнитель, трек, альбом..." oninput="onSearch(this.value)" autocomplete="off">
       <span class="search-clear" id="searchClear" onclick="clearSearch()">✕</span>
     </div>
   </div>
-  <div class="search-stats" id="searchStats" style="display:none">
-    <div class="search-stat">Exclusive: <span id="stat-ex">0</span></div>
-    <div class="search-stat">Deezer: <span id="stat-dz">0</span></div>
-    <div class="search-stat">iTunes: <span id="stat-it">0</span></div>
+  <div class="search-stats" id="searchStats">
+    <div class="search-stat">EXCLUSIVE: <b id="st-ex">0</b></div>
+    <div class="search-stat">Deezer: <b id="st-dz">0</b></div>
+    <div class="search-stat">iTunes: <b id="st-it">0</b></div>
   </div>
   <div id="searchResults">
     <div class="search-hint">
-      <span class="big">🌍</span>
-      <div>Поиск по всей музыке мира</div>
-      <div style="font-size:12px;color:#444;margin-top:4px">Deezer · iTunes · твои 170 треков</div>
-      <div class="tags">
-        <span class="tag" onclick="quickSearch('The Weeknd')">The Weeknd</span>
-        <span class="tag" onclick="quickSearch('Drake')">Drake</span>
-        <span class="tag" onclick="quickSearch('Coldplay')">Coldplay</span>
-        <span class="tag" onclick="quickSearch('Monatik')">Monatik</span>
-        <span class="tag" onclick="quickSearch('Anna Asti')">Anna Asti</span>
-        <span class="tag" onclick="quickSearch('Miyagi')">Miyagi</span>
-        <span class="tag" onclick="quickSearch('Eminem')">Eminem</span>
-        <span class="tag" onclick="quickSearch('Rihanna')">Rihanna</span>
+      <span class="sh-icon">🌍</span>
+      <div style="font-size:16px;font-weight:700">Поиск по всему миру</div>
+      <div style="color:#444;font-size:13px">90+ миллионов треков</div>
+      <div class="search-tags">
+        <span class="search-tag" onclick="quickSearch('The Weeknd')">The Weeknd</span>
+        <span class="search-tag" onclick="quickSearch('Drake')">Drake</span>
+        <span class="search-tag" onclick="quickSearch('Eminem')">Eminem</span>
+        <span class="search-tag" onclick="quickSearch('Coldplay')">Coldplay</span>
+        <span class="search-tag" onclick="quickSearch('Miyagi')">Miyagi</span>
+        <span class="search-tag" onclick="quickSearch('Anna Asti')">Anna Asti</span>
+        <span class="search-tag" onclick="quickSearch('Monatik')">Monatik</span>
+        <span class="search-tag" onclick="quickSearch('Rihanna')">Rihanna</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PLAYER PAGE -->
+<!-- ===== GENRES PAGE ===== -->
+<div class="page" id="pg-genres">
+  <div class="pg-hdr"><h1>Genres</h1></div>
+  <div class="genre-grid">
+    <div class="genre-card g-remix" onclick="goGenre('remix')" style="grid-column:span 2">
+      <span class="gc-emoji">🔥</span>
+      <div class="gc-name">Remix</div>
+      <div class="gc-count" id="gc-remix">— треков</div>
+    </div>
+    <div class="genre-card g-love" onclick="goGenre('love')">
+      <span class="gc-emoji">❤️</span>
+      <div class="gc-name">Love</div>
+      <div class="gc-count" id="gc-love">— треков</div>
+    </div>
+    <div class="genre-card g-hiphop" onclick="goGenre('hiphop')">
+      <span class="gc-emoji">🎤</span>
+      <div class="gc-name">Hip-Hop</div>
+      <div class="gc-count" id="gc-hiphop">— треков</div>
+    </div>
+    <div class="genre-card g-electronic" onclick="goGenre('electronic')">
+      <span class="gc-emoji">⚡</span>
+      <div class="gc-name">Electronic</div>
+      <div class="gc-count" id="gc-electronic">— треков</div>
+    </div>
+    <div class="genre-card g-winter" onclick="goGenre('winter')">
+      <span class="gc-emoji">❄️</span>
+      <div class="gc-name">Winter</div>
+      <div class="gc-count" id="gc-winter">— треков</div>
+    </div>
+    <div class="genre-card g-city" onclick="goGenre('city')" style="grid-column:span 2">
+      <span class="gc-emoji">🏙️</span>
+      <div class="gc-name">City</div>
+      <div class="gc-count" id="gc-city">— треков</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PLAYER PAGE ===== -->
 <div class="page" id="pg-player">
   <div class="fp-wrap">
-    <div class="fp-source" id="fp-source">EXCLUSIVE MUSIC</div>
+    <div class="fp-topbar">
+      <button onclick="showPage('songs')">‹</button>
+      <div class="fp-label" id="fp-label">NOW PLAYING</div>
+      <button>⋮</button>
+    </div>
     <div class="fp-cover-wrap">
-      <div class="fp-cover g-remix" id="fp-cover"><span class="cover-emoji" id="fp-emoji">🎵</span></div>
-      <canvas id="waveCanvas" width="260" height="260"></canvas>
+      <div class="fp-disc g-remix" id="fp-disc"><span class="disc-emoji" id="fp-emoji">🎵</span></div>
+      <canvas id="waveCanvas" width="288" height="288"></canvas>
       <div class="fp-nav-arrows">
         <button class="fp-arrow" onclick="prevTrack()">‹</button>
         <button class="fp-arrow" onclick="nextTrack()">›</button>
@@ -231,47 +283,82 @@ canvas#waveCanvas{position:absolute;inset:-20px}
     <div class="fp-info">
       <div class="fp-track-title" id="fp-title">Выбери трек</div>
       <div class="fp-track-artist" id="fp-artist">EXCLUSIVE MUSIC BOT</div>
+      <div class="fp-track-source" id="fp-source">EXCLUSIVE · 170 ТРЕКОВ</div>
     </div>
-    <input type="range" class="fp-prog" id="fp-prog" min="0" max="100" value="0" oninput="seekTo(this.value)" style="width:100%">
+    <div class="fp-prog-wrap">
+      <input type="range" class="fp-prog" id="fp-prog" min="0" max="100" value="0" oninput="seekTo(this.value)">
+    </div>
     <div class="fp-times"><span id="fp-cur">0:00</span><span id="fp-dur">0:00</span></div>
     <div class="fp-controls">
-      <button class="ctrl-btn" id="btn-shuf" onclick="toggleShuffle()">🔀</button>
-      <button class="ctrl-btn" onclick="prevTrack()">⏮</button>
-      <button class="ctrl-btn ctrl-main" id="btn-play" onclick="togglePlay()">▶</button>
-      <button class="ctrl-btn" onclick="nextTrack()">⏭</button>
-      <button class="ctrl-btn" id="btn-rep" onclick="toggleRepeat()">🔁</button>
+      <button class="ctrl-side" id="btn-shuf" onclick="toggleShuffle()">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+      </button>
+      <button class="ctrl-prev" onclick="prevTrack()">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      </button>
+      <button class="ctrl-play" id="btn-play" onclick="togglePlay()">
+        <svg id="play-icon" viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="ctrl-next" onclick="nextTrack()">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+      </button>
+      <button class="ctrl-side" id="btn-rep" onclick="toggleRepeat()">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+      </button>
     </div>
-    <div class="fp-vol-wrap">
-      <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-      <input type="range" class="fp-vol" id="fp-vol" min="0" max="100" value="100" oninput="setVolume(this.value)">
-      <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z"/></svg>
+    <div class="fp-vol-row">
+      <span class="vol-icon">🔈</span>
+      <input type="range" class="fp-vol" id="fp-vol" min="0" max="100" value="80" oninput="setVol(this.value)">
+      <span class="vol-icon">🔊</span>
     </div>
     <div class="fp-counter" id="fp-counter"></div>
   </div>
 </div>
 
-<!-- MINI PLAYER -->
+<!-- ===== MINI PLAYER ===== -->
 <div class="mini" id="mini" onclick="showPage('player')">
   <div class="mini-prog"><div class="mini-prog-bar" id="mini-bar"></div></div>
-  <div class="mini-cover g-remix" id="mini-cover"><span id="mini-emoji">🎵</span></div>
+  <div class="mini-disc g-remix" id="mini-disc"><span id="mini-emoji">🎵</span></div>
   <div class="mini-info">
     <div class="mini-title" id="mini-title">Выбери трек</div>
     <div class="mini-artist" id="mini-artist">EXCLUSIVE MUSIC</div>
   </div>
-  <button class="mini-next" onclick="event.stopPropagation();prevTrack()">⏮</button>
-  <button class="mini-play" id="mini-play" onclick="event.stopPropagation();togglePlay()">▶</button>
-  <button class="mini-next" onclick="event.stopPropagation();nextTrack()">⏭</button>
+  <button class="mini-btn" onclick="event.stopPropagation();prevTrack()">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+  </button>
+  <button class="mini-btn play" id="mini-play" onclick="event.stopPropagation();togglePlay()">
+    <svg id="mini-play-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+  <button class="mini-btn" onclick="event.stopPropagation();nextTrack()">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+  </button>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<div class="bnav">
+  <button class="bnav-btn active" onclick="showPage('songs')" id="nav-songs">
+    <svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>
+    Songs
+  </button>
+  <button class="bnav-btn" onclick="showPage('search')" id="nav-search">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
+    Search
+  </button>
+  <button class="bnav-btn" onclick="showPage('genres')" id="nav-genres">
+    <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+    Genres
+  </button>
+  <button class="bnav-btn" onclick="showPage('player')" id="nav-player">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+    Player
+  </button>
 </div>
 
 <audio id="audioEl"></audio>
-
 <script>
-// Telegram init
 try{if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.ready();Telegram.WebApp.expand();}}catch(e){}
-
 const PROXY='https://web-production-6791f.up.railway.app';
 const DEEZER_PROXY='https://corsproxy.io/?';
-
 const TRACKS = [
       { id:1, msg_id:1, title:"Не лей (exclusive music remix)", artist:"Bake", genre:"remix", duration:235, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQADHWnbpnHkhd9QyNxWORqFL4taLfdQAAL-VgACoh6ZSd-Y1aP_mW60OwQ", plays:213 },
       { id:2, msg_id:2, title:"Не стали другими (exclusive music remix)", artist:"Маракеш", genre:"remix", duration:140, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQADHmnbplWaNnk3bPBoN7-LDjkQZSvUAAJiWwACoh6ZSZWBzjmBeu3KOwQ", plays:226 },
@@ -445,49 +532,44 @@ const TRACKS = [
       { id:170, msg_id:192, title:"Maria, Maria exclusive music remix", artist:"Mari Ferrari, Miss Mary", genre:"remix", duration:210, emoji:"🔥", file_id:"CQACAgIAAx0Ca5esqQACAVpp26es9J44ov0EiAYtNnqBH-VKHwAC838AApsMAUifnzD62rmJvjsE", plays:2410 }
 ];
 
-// STATE
+// ===== STATE =====
+const GENRE_CLASS = {remix:'g-remix',love:'g-love',hiphop:'g-hiphop',electronic:'g-electronic',winter:'g-winter',city:'g-city'};
+const PALETTES = [
+  ['#FF2D78','#FF6B6B'],['#00D4FF','#0091EA'],['#7C4DFF','#448AFF'],
+  ['#FF6D00','#FF9100'],['#00E676','#00BCD4'],['#E040FB','#FF4081'],
+  ['#FFCC00','#FF6D00'],['#00B0FF','#7C4DFF']
+];
+let palIdx = 0;
 let currentTrack = null;
-let currentSource = 'local'; // 'local' | 'deezer'
+let currentSource = 'local';
+let filteredTracks = [...TRACKS];
 let isPlaying = false;
 let isShuffle = false;
 let isRepeat = false;
-let currentGenre = 'all';
-let filteredTracks = [...TRACKS];
-let likes = JSON.parse(localStorage.getItem('likes')||'{}');
+let likes = JSON.parse(localStorage.getItem('emx_likes')||'{}');
 let waveAnim = null;
 const audio = document.getElementById('audioEl');
-
-// PALETTES
-const PALETTES = [
-  ['#00E5FF','#0091FF'],['#FF9500','#FF5E00'],
-  ['#00E676','#00B0FF'],['#FF4081','#F50057'],
-  ['#FFCC00','#FF6D00'],['#448AFF','#7C4DFF'],
-  ['#EA80FC','#E040FB'],['#69F0AE','#00E676']
-];
-let palIdx = 0;
-
-// GENRE COLORS
-const GENRE_CLASS = {remix:'g-remix',love:'g-love',hiphop:'g-hiphop',electronic:'g-electronic',winter:'g-winter',city:'g-city'};
-const GENRE_BG = {remix:'linear-gradient(135deg,#FF6B6B,#FF8E53)',love:'linear-gradient(135deg,#FF4B8B,#FF8FB1)',hiphop:'linear-gradient(135deg,#667EEA,#764BA2)',electronic:'linear-gradient(135deg,#00B4DB,#0083B0)',winter:'linear-gradient(135deg,#83A4D4,#B6FBFF)',city:'linear-gradient(135deg,#606c88,#3f4c6b)'};
+audio.volume = 0.8;
 
 function fmt(s){s=Math.floor(s||0);return Math.floor(s/60)+':'+(s%60+'').padStart(2,'0')}
 
-// RENDER LIBRARY
-function renderList(tracks){
-  const el = document.getElementById('tlist');
-  if(!tracks.length){el.innerHTML='<div class="search-hint" style="padding:40px 20px;color:#555">Треков не найдено</div>';return;}
-  el.innerHTML = tracks.map(t=>{
+// ===== RENDER SONGS =====
+function renderSongs(tracks){
+  const el = document.getElementById('songs-list');
+  if(!tracks.length){el.innerHTML='<div class="search-hint" style="padding:40px 20px"><span class="sh-icon">🎵</span><div>Треков не найдено</div></div>';return;}
+  el.innerHTML = tracks.map((t,i)=>{
     const gc = GENRE_CLASS[t.genre]||'g-remix';
     const letter = (t.artist||'?')[0].toUpperCase();
     const liked = likes[t.id]?'liked':'';
-    const playing = currentSource==='local'&&currentTrack&&currentTrack.id===t.id?'playing':'';
-    return `<div class="trow ${playing}" onclick="playLocal(${t.id})" id="row-${t.id}">
-      <div class="t-cover ${gc}"><span class="cover-letter">${letter}</span><div class="play-overlay">▶</div></div>
+    const playing = currentSource==='local'&&currentTrack&&currentTrack.id===t.id?' playing':'';
+    return `<div class="trow${playing}" onclick="playLocal(${t.id})" id="row-${t.id}">
+      <div class="t-num">${isPlaying&&currentTrack&&currentTrack.id===t.id?'▶':i+1}</div>
+      <div class="t-cover ${gc}">${letter}</div>
       <div class="t-info">
         <div class="t-title">${t.title}</div>
-        <div class="t-artist">${t.artist}</div>
+        <div class="t-sub">${t.artist}</div>
       </div>
-      <div class="t-meta">
+      <div class="t-right">
         <span class="t-dur">${fmt(t.duration)}</span>
         <button class="t-heart ${liked}" onclick="event.stopPropagation();toggleLike(${t.id},this)">♥</button>
       </div>
@@ -495,113 +577,54 @@ function renderList(tracks){
   }).join('');
 }
 
-function filterGenre(g, el){
-  currentGenre = g;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+function filterSongs(g, el){
+  document.querySelectorAll('#songs-tabs .tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   filteredTracks = g==='all'?[...TRACKS]:TRACKS.filter(t=>t.genre===g);
-  renderList(filteredTracks);
+  renderSongs(filteredTracks);
 }
 
-function toggleLike(id, btn){
-  if(likes[id]) delete likes[id]; else likes[id]=1;
-  localStorage.setItem('likes',JSON.stringify(likes));
+function toggleLike(id,btn){
+  likes[id]?delete likes[id]:likes[id]=1;
+  localStorage.setItem('emx_likes',JSON.stringify(likes));
   btn.classList.toggle('liked');
 }
 
-// PLAY LOCAL
+// ===== GENRE PAGE =====
+function initGenreCounts(){
+  const genres=['remix','love','hiphop','electronic','winter','city'];
+  genres.forEach(g=>{
+    const n=TRACKS.filter(t=>t.genre===g).length;
+    const el=document.getElementById('gc-'+g);
+    if(el) el.textContent=n+' треков';
+  });
+}
+function goGenre(g){
+  filteredTracks=TRACKS.filter(t=>t.genre===g);
+  renderSongs(filteredTracks);
+  // update tabs
+  document.querySelectorAll('#songs-tabs .tab').forEach(t=>t.classList.remove('active'));
+  const tabMap={all:0,remix:1,love:2,hiphop:3,electronic:4,winter:5};
+  const tabs=document.querySelectorAll('#songs-tabs .tab');
+  if(tabs[tabMap[g]]) tabs[tabMap[g]].classList.add('active');
+  showPage('songs');
+}
+
+// ===== PLAY LOCAL =====
 function playLocal(id){
-  const t = TRACKS.find(x=>x.id===id);
+  const t=TRACKS.find(x=>x.id===id);
   if(!t) return;
-  currentSource = 'local';
+  currentSource='local';
   loadTrack(t);
   showPage('player');
 }
 
-// PLAY WORLD TRACK — полный трек через yt-dlp прокси
-async function playDeezer(t){
-  currentSource = 'deezer';
-  currentTrack = t;
-  showPage('player');
-
-  // Обновить UI сразу
-  document.getElementById('fp-title').textContent = t.title;
-  document.getElementById('fp-artist').textContent = t.artist||'';
-  document.getElementById('fp-source').textContent = '⏳ Ищем трек...';
-  document.getElementById('fp-cur').textContent = '0:00';
-  document.getElementById('fp-dur').textContent = fmt(t.duration||0);
-  document.getElementById('btn-play').textContent = '⏳';
-
-  // Обложка
-  const cover = document.getElementById('fp-cover');
-  if(t.cover){
-    cover.innerHTML=`<img src="${t.cover}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentNode.className='fp-cover g-remix';this.parentNode.innerHTML='<span class=cover-emoji>🎵</span>'">`;
-    cover.className='fp-cover';
-  } else {
-    cover.className='fp-cover g-remix';
-    cover.innerHTML='<span class="cover-emoji">🎵</span>';
-  }
-  updateMini();
-  document.getElementById('mini').classList.add('visible');
-  palIdx=(palIdx+1)%8;
-  startWave();
-
-  // Пауза текущего
-  document.getElementById('audioEl').pause();
-
-  // Попробовать yt-dlp прокси (Railway)
-  const q = encodeURIComponent(t.title + ' ' + (t.artist||''));
-  try {
-    const r = await fetch(PROXY + '/yt/url?q=' + q, {signal: AbortSignal.timeout(15000)});
-    if(r.ok){
-      const d = await r.json();
-      if(d.url){
-        loadStreamUrl(d.url, '🎵 ПОЛНЫЙ ТРЕК');
-        return;
-      }
-    }
-  } catch(e){}
-
-  // Fallback 1: стримить через /yt/stream
-  try {
-    const streamUrl = PROXY + '/yt/stream?q=' + q;
-    loadStreamUrl(streamUrl, '🎵 ПОЛНЫЙ ТРЕК');
-    return;
-  } catch(e){}
-
-  // Fallback 2: превью 30 сек
-  if(t.preview){
-    loadStreamUrl(t.preview, '⚠️ Превью 30 сек');
-  } else {
-    document.getElementById('fp-source').textContent = '❌ Недоступно';
-    document.getElementById('btn-play').textContent = '▶';
-  }
-}
-
-function loadStreamUrl(url, label){
-  const audio = document.getElementById('audioEl');
-  audio.src = url;
-  audio.load();
-  audio.play().then(()=>{
-    isPlaying = true;
-    document.getElementById('fp-source').textContent = label;
-    document.getElementById('btn-play').textContent = '⏸';
-    document.getElementById('mini-play').textContent = '⏸';
-  }).catch(()=>{
-    // autoplay blocked — show play button
-    document.getElementById('fp-source').textContent = label + ' · нажми ▶';
-    document.getElementById('btn-play').textContent = '▶';
-    isPlaying = false;
-  });
-}
-
 function loadTrack(t){
-  currentTrack = t;
-  audio.src = currentSource==='local'
-    ? PROXY+'/audio/'+encodeURIComponent(t.file_id)
-    : t.preview;
+  currentTrack=t;
+  const isLocal=currentSource==='local';
+  audio.src=isLocal?PROXY+'/audio/'+encodeURIComponent(t.file_id):(t.ytStreamUrl||t.preview||'');
   audio.play().catch(()=>{});
-  isPlaying = true;
+  isPlaying=true;
   updatePlayerUI();
   updateMini();
   document.getElementById('mini').classList.add('visible');
@@ -610,93 +633,99 @@ function loadTrack(t){
 
 function updatePlayerUI(){
   if(!currentTrack) return;
-  const t = currentTrack;
-  document.getElementById('fp-title').textContent = t.title;
-  document.getElementById('fp-artist').textContent = t.artist||t.performer||'';
-  document.getElementById('fp-dur').textContent = fmt(t.duration||t.duration);
-  document.getElementById('btn-play').textContent = isPlaying?'⏸':'▶';
-  document.getElementById('mini-play').textContent = isPlaying?'⏸':'▶';
-  document.getElementById('fp-source').textContent = currentSource==='deezer'?'DEEZER PREVIEW':'EXCLUSIVE MUSIC';
-
-  // cover
-  const cover = document.getElementById('fp-cover');
-  if(currentSource==='deezer'&&t.cover){
-    cover.innerHTML=`<img src="${t.cover}" onerror="this.parentNode.innerHTML='<span class=cover-emoji>🎵</span>'">`;
-    cover.className='fp-cover';
-  } else {
-    const gc = GENRE_CLASS[t.genre]||'g-remix';
-    cover.className=`fp-cover ${gc}`;
-    cover.innerHTML=`<span class="cover-emoji">${t.emoji||'🎵'}</span>`;
-  }
+  const t=currentTrack;
+  document.getElementById('fp-title').textContent=t.title;
+  document.getElementById('fp-artist').textContent=t.artist||'';
+  document.getElementById('fp-dur').textContent=fmt(t.duration||0);
+  document.getElementById('fp-source').textContent=currentSource==='local'?'EXCLUSIVE · '+TRACKS.length+' ТРЕКОВ':'WORLD MUSIC · ПОЛНЫЙ ТРЕК';
+  document.getElementById('fp-label').textContent='NOW PLAYING';
+  // play icon
+  setPlayIcon(true);
   // counter
   if(currentSource==='local'){
-    const idx = TRACKS.findIndex(x=>x.id===t.id);
-    document.getElementById('fp-counter').textContent = (idx+1)+' / '+TRACKS.length;
+    const idx=TRACKS.findIndex(x=>x.id===t.id);
+    document.getElementById('fp-counter').textContent=(idx+1)+' / '+TRACKS.length;
   } else {
-    document.getElementById('fp-counter').textContent = 'Deezer · 30 сек превью';
+    document.getElementById('fp-counter').textContent='';
   }
-  palIdx = (palIdx+1)%8;
+  // disc
+  const disc=document.getElementById('fp-disc');
+  const gc=GENRE_CLASS[t.genre]||'g-remix';
+  disc.className='fp-disc '+gc+' spinning';
+  disc.innerHTML=`<span class="disc-emoji">${t.emoji||'🎵'}</span>`;
+  if(t.cover&&currentSource==='deezer'){
+    disc.innerHTML=`<img src="${t.cover}" onerror="this.parentNode.innerHTML='<span class=disc-emoji>🎵</span>'">`;
+  }
+  palIdx=(palIdx+1)%8;
   startWave();
 }
 
 function updateMini(){
   if(!currentTrack) return;
-  const t = currentTrack;
-  document.getElementById('mini-title').textContent = t.title;
-  document.getElementById('mini-artist').textContent = t.artist||'';
-  const mc = document.getElementById('mini-cover');
-  if(currentSource==='deezer'&&t.cover){
-    mc.innerHTML=`<img src="${t.cover}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">`;
-    mc.className='mini-cover';
-  } else {
-    const gc = GENRE_CLASS[t.genre]||'g-remix';
-    mc.className=`mini-cover ${gc}`;
-    mc.innerHTML=`<span id="mini-emoji">${t.emoji||'🎵'}</span>`;
-  }
+  const t=currentTrack;
+  document.getElementById('mini-title').textContent=t.title;
+  document.getElementById('mini-artist').textContent=t.artist||'';
+  const md=document.getElementById('mini-disc');
+  const gc=GENRE_CLASS[t.genre]||'g-remix';
+  md.className='mini-disc '+gc+(isPlaying?' spinning':' paused');
+  md.innerHTML=t.cover&&currentSource==='deezer'
+    ?`<img src="${t.cover}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+    :`<span>${t.emoji||'🎵'}</span>`;
 }
 
 function highlightRow(){
   document.querySelectorAll('.trow').forEach(r=>r.classList.remove('playing'));
   if(currentSource==='local'&&currentTrack){
-    const row = document.getElementById('row-'+currentTrack.id);
+    const row=document.getElementById('row-'+currentTrack.id);
     if(row) row.classList.add('playing');
   }
 }
 
-// CONTROLS
+function setPlayIcon(playing){
+  const paths={
+    play:'M8 5v14l11-7z',
+    pause:'M6 19h4V5H6v14zm8-14v14h4V5h-4z'
+  };
+  const p=playing?paths.pause:paths.play;
+  document.getElementById('play-icon').setAttribute('d',p);
+  document.getElementById('mini-play-icon').setAttribute('d',p);
+}
+
+// ===== CONTROLS =====
 function togglePlay(){
   if(!currentTrack) return;
   if(isPlaying){audio.pause();isPlaying=false;}
-  else{audio.play();isPlaying=true;}
-  document.getElementById('btn-play').textContent=isPlaying?'⏸':'▶';
-  document.getElementById('mini-play').textContent=isPlaying?'⏸':'▶';
+  else{audio.play().catch(()=>{});isPlaying=true;}
+  setPlayIcon(isPlaying);
+  const disc=document.getElementById('fp-disc');
+  disc.classList.toggle('paused',!isPlaying);
+  const md=document.getElementById('mini-disc');
+  md.classList.toggle('spinning',isPlaying);
+  md.classList.toggle('paused',!isPlaying);
 }
 function prevTrack(){
-  if(currentSource==='deezer'||!currentTrack) return;
-  let idx = filteredTracks.findIndex(x=>x.id===currentTrack.id);
-  if(isShuffle) idx=Math.floor(Math.random()*filteredTracks.length);
-  else idx = (idx-1+filteredTracks.length)%filteredTracks.length;
+  if(!currentTrack||currentSource==='deezer') return;
+  let idx=filteredTracks.findIndex(x=>x.id===currentTrack.id);
+  idx=isShuffle?Math.floor(Math.random()*filteredTracks.length):(idx-1+filteredTracks.length)%filteredTracks.length;
   playLocal(filteredTracks[idx].id);
 }
 function nextTrack(){
-  if(currentSource==='deezer'||!currentTrack){
-    if(currentSource==='deezer') return;
-  }
-  let idx = filteredTracks.findIndex(x=>x.id===currentTrack.id);
-  if(isShuffle) idx=Math.floor(Math.random()*filteredTracks.length);
-  else idx=(idx+1)%filteredTracks.length;
+  if(!currentTrack||currentSource==='deezer') return;
+  let idx=filteredTracks.findIndex(x=>x.id===currentTrack.id);
+  idx=isShuffle?Math.floor(Math.random()*filteredTracks.length):(idx+1)%filteredTracks.length;
   playLocal(filteredTracks[idx].id);
 }
-function toggleShuffle(){isShuffle=!isShuffle;document.getElementById('btn-shuf').classList.toggle('ctrl-active',isShuffle);}
-function toggleRepeat(){isRepeat=!isRepeat;document.getElementById('btn-rep').classList.toggle('ctrl-active',isRepeat);}
+function toggleShuffle(){isShuffle=!isShuffle;document.getElementById('btn-shuf').classList.toggle('on',isShuffle);}
+function toggleRepeat(){isRepeat=!isRepeat;document.getElementById('btn-rep').classList.toggle('on',isRepeat);}
 function seekTo(v){if(audio.duration)audio.currentTime=audio.duration*v/100;}
-function setVolume(v){audio.volume=v/100;}
+function setVol(v){audio.volume=v/100;}
 
-// AUDIO EVENTS
+// Audio events
 audio.addEventListener('timeupdate',()=>{
-  const p = audio.duration?audio.currentTime/audio.duration*100:0;
-  document.getElementById('fp-prog').value=p;
-  document.getElementById('fp-prog').style.setProperty('--prog',p+'%');
+  const p=audio.duration?audio.currentTime/audio.duration*100:0;
+  const prog=document.getElementById('fp-prog');
+  prog.value=p;
+  prog.style.setProperty('--prog',p+'%');
   document.getElementById('fp-cur').textContent=fmt(audio.currentTime);
   if(audio.duration) document.getElementById('fp-dur').textContent=fmt(audio.duration);
   document.getElementById('mini-bar').style.width=p+'%';
@@ -704,31 +733,31 @@ audio.addEventListener('timeupdate',()=>{
 audio.addEventListener('ended',()=>{
   if(isRepeat){audio.play();return;}
   if(currentSource==='local') nextTrack();
+  else{isPlaying=false;setPlayIcon(false);}
 });
-audio.addEventListener('play',()=>{isPlaying=true;document.getElementById('btn-play').textContent='⏸';document.getElementById('mini-play').textContent='⏸';});
-audio.addEventListener('pause',()=>{isPlaying=false;document.getElementById('btn-play').textContent='▶';document.getElementById('mini-play').textContent='▶';});
+audio.addEventListener('play',()=>{isPlaying=true;setPlayIcon(true);});
+audio.addEventListener('pause',()=>{isPlaying=false;setPlayIcon(false);});
 
-// WAVEFORM
+// ===== WAVEFORM =====
 let wavePhase=0;
 function startWave(){
   if(waveAnim) cancelAnimationFrame(waveAnim);
   const canvas=document.getElementById('waveCanvas');
   const ctx=canvas.getContext('2d');
-  const W=canvas.width,H=canvas.height;
-  const cx=W/2,cy=H/2,R=110,bars=64;
+  const W=288,H=288,cx=W/2,cy=H/2,R=120,bars=72;
   const [c1,c2]=PALETTES[palIdx];
   function draw(){
     ctx.clearRect(0,0,W,H);
-    wavePhase+=0.04;
+    wavePhase+=0.035;
     for(let i=0;i<bars;i++){
-      const a=(i/bars)*Math.PI*2;
-      const amp=isPlaying?(10+Math.sin(wavePhase+i*0.4)*8+Math.random()*4):3;
-      const x1=cx+Math.cos(a)*R, y1=cy+Math.sin(a)*R;
-      const x2=cx+Math.cos(a)*(R+amp), y2=cy+Math.sin(a)*(R+amp);
+      const a=(i/bars)*Math.PI*2-Math.PI/2;
+      const amp=isPlaying?(8+Math.sin(wavePhase+i*0.35)*7+Math.sin(wavePhase*1.7+i*0.6)*4):2;
+      const x1=cx+Math.cos(a)*R,y1=cy+Math.sin(a)*R;
+      const x2=cx+Math.cos(a)*(R+amp),y2=cy+Math.sin(a)*(R+amp);
       const g=ctx.createLinearGradient(x1,y1,x2,y2);
-      g.addColorStop(0,c1+'88'); g.addColorStop(1,c2);
-      ctx.strokeStyle=g; ctx.lineWidth=2.5; ctx.lineCap='round';
-      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      g.addColorStop(0,c1+'99');g.addColorStop(1,c2+'ff');
+      ctx.strokeStyle=g;ctx.lineWidth=2.5;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
     }
     waveAnim=requestAnimationFrame(draw);
   }
@@ -736,173 +765,176 @@ function startWave(){
 }
 
 // ===== GLOBAL SEARCH =====
-let searchTimer=null;
-let lastQuery='';
-
-function quickSearch(q){
-  document.getElementById('searchInput').value=q;
-  onSearch(q);
-}
+let searchTimer=null,lastQuery='';
+function quickSearch(q){document.getElementById('searchInput').value=q;onSearch(q);}
 function clearSearch(){
   document.getElementById('searchInput').value='';
   document.getElementById('searchClear').style.display='none';
   document.getElementById('searchStats').style.display='none';
-  document.getElementById('searchResults').innerHTML=`<div class="search-hint">
-    <span class="big">🌍</span>
-    <div>Поиск по всей музыке мира</div>
-    <div style="font-size:12px;color:#444;margin-top:4px">Deezer · iTunes · твои 170 треков</div>
-    <div class="tags">
-      <span class="tag" onclick="quickSearch('The Weeknd')">The Weeknd</span>
-      <span class="tag" onclick="quickSearch('Drake')">Drake</span>
-      <span class="tag" onclick="quickSearch('Coldplay')">Coldplay</span>
-      <span class="tag" onclick="quickSearch('Monatik')">Monatik</span>
-      <span class="tag" onclick="quickSearch('Anna Asti')">Anna Asti</span>
-      <span class="tag" onclick="quickSearch('Miyagi')">Miyagi</span>
-      <span class="tag" onclick="quickSearch('Eminem')">Eminem</span>
-      <span class="tag" onclick="quickSearch('Rihanna')">Rihanna</span>
-    </div>
-  </div>`;
+  document.getElementById('searchResults').innerHTML=`<div class="search-hint"><span class="sh-icon">🌍</span><div style="font-size:16px;font-weight:700">Поиск по всему миру</div><div style="color:#444;font-size:13px">90+ миллионов треков</div><div class="search-tags"><span class="search-tag" onclick="quickSearch('The Weeknd')">The Weeknd</span><span class="search-tag" onclick="quickSearch('Drake')">Drake</span><span class="search-tag" onclick="quickSearch('Eminem')">Eminem</span><span class="search-tag" onclick="quickSearch('Coldplay')">Coldplay</span><span class="search-tag" onclick="quickSearch('Miyagi')">Miyagi</span><span class="search-tag" onclick="quickSearch('Anna Asti')">Anna Asti</span><span class="search-tag" onclick="quickSearch('Monatik')">Monatik</span><span class="search-tag" onclick="quickSearch('Rihanna')">Rihanna</span></div></div>`;
 }
-
 function onSearch(q){
   clearTimeout(searchTimer);
   q=q.trim();
   document.getElementById('searchClear').style.display=q?'block':'none';
   if(!q){clearSearch();return;}
   lastQuery=q;
-  document.getElementById('searchResults').innerHTML=`<div class="spinner"><div class="spin-ring"></div>Ищем по всему миру...</div>`;
+  document.getElementById('searchResults').innerHTML='<div class="spinner"><div class="spin-ring"></div>Ищем по всему миру...</div>';
   document.getElementById('searchStats').style.display='none';
   searchTimer=setTimeout(()=>globalSearch(q),400);
 }
-
 async function globalSearch(q){
   if(q!==lastQuery) return;
-  // 1) Local search in TRACKS
   const qLow=q.toLowerCase();
-  const localResults=TRACKS.filter(t=>
-    t.title.toLowerCase().includes(qLow)||
-    t.artist.toLowerCase().includes(qLow)
-  );
-  // 2) Deezer + iTunes in parallel
-  const [deezerResults, itunesResults] = await Promise.all([
-    fetchDeezer(q),
-    fetchItunes(q)
-  ]);
+  const local=TRACKS.filter(t=>t.title.toLowerCase().includes(qLow)||t.artist.toLowerCase().includes(qLow));
+  const [dz,it]=await Promise.all([fetchDeezer(q),fetchItunes(q)]);
   if(q!==lastQuery) return;
-  renderGlobalResults(q, localResults, deezerResults, itunesResults);
+  document.getElementById('st-ex').textContent=local.length;
+  document.getElementById('st-dz').textContent=dz.length;
+  document.getElementById('st-it').textContent=it.length;
+  document.getElementById('searchStats').style.display='flex';
+  renderGlobalResults(local,dz,it);
 }
-
 async function fetchDeezer(q){
   try{
-    const url='https://api.deezer.com/search?q='+encodeURIComponent(q)+'&limit=25';
-    const r=await fetch(DEEZER_PROXY+encodeURIComponent(url),{signal:AbortSignal.timeout(8000)});
-    const d=await r.json();
-    return d.data||[];
+    const r=await fetch(DEEZER_PROXY+encodeURIComponent('https://api.deezer.com/search?q='+encodeURIComponent(q)+'&limit=20'),{signal:AbortSignal.timeout(8000)});
+    return (await r.json()).data||[];
   }catch(e){return [];}
 }
-
 async function fetchItunes(q){
   try{
-    const url='https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=music&limit=20&entity=song';
-    const r=await fetch(DEEZER_PROXY+encodeURIComponent(url),{signal:AbortSignal.timeout(8000)});
-    const d=await r.json();
-    return d.results||[];
+    const r=await fetch(DEEZER_PROXY+encodeURIComponent('https://itunes.apple.com/search?term='+encodeURIComponent(q)+'&media=music&limit=15&entity=song'),{signal:AbortSignal.timeout(8000)});
+    return (await r.json()).results||[];
   }catch(e){return [];}
 }
-
-function renderGlobalResults(q, local, deezer, itunes){
+function renderGlobalResults(local,dz,it){
   const el=document.getElementById('searchResults');
-  const total=local.length+deezer.length+itunes.length;
-  // update stats
-  document.getElementById('stat-ex').textContent=local.length;
-  document.getElementById('stat-dz').textContent=deezer.length;
-  document.getElementById('stat-it').textContent=itunes.length;
-  document.getElementById('searchStats').style.display='flex';
-
-  if(!total){
-    el.innerHTML='<div class="no-results" style="padding:60px 20px">😔 Ничего не найдено<br><span style="font-size:12px;color:#444">Попробуй другой запрос</span></div>';
-    return;
+  if(!local.length&&!dz.length&&!it.length){
+    el.innerHTML='<div class="no-results">😔 Ничего не найдено</div>';return;
   }
-
-  let html='';
-
-  // EXCLUSIVE section
+  let h='';
   if(local.length){
-    html+=`<div class="s-section">EXCLUSIVE <div class="s-section-line"></div></div>`;
-    html+=local.map(t=>{
+    h+='<div class="s-sep">EXCLUSIVE</div>';
+    h+=local.map((t,i)=>{
       const gc=GENRE_CLASS[t.genre]||'g-remix';
-      const letter=(t.artist||'?')[0].toUpperCase();
       return `<div class="trow" onclick="playLocal(${t.id})">
-        <div class="t-cover ${gc}"><span class="cover-letter">${letter}</span></div>
-        <div class="t-info">
-          <div class="t-title">${t.title}<span class="s-badge s-badge-ex">EX</span></div>
-          <div class="t-artist">${t.artist}</div>
-        </div>
-        <div class="t-meta"><span class="t-dur">${fmt(t.duration)}</span></div>
+        <div class="t-num">${i+1}</div>
+        <div class="t-cover ${gc}">${(t.artist||'?')[0].toUpperCase()}</div>
+        <div class="t-info"><div class="t-title">${t.title}<span class="src-badge badge-ex">EX</span></div><div class="t-sub">${t.artist}</div></div>
+        <div class="t-right"><span class="t-dur">${fmt(t.duration)}</span></div>
       </div>`;
     }).join('');
   }
-
-  // DEEZER section
-  if(deezer.length){
-    html+=`<div class="s-section">DEEZER <div class="s-section-line"></div></div>`;
-    html+=deezer.map(t=>{
-      const artist=t.artist&&t.artist.name?t.artist.name:'';
-      const cover=t.album&&t.album.cover_medium?t.album.cover_medium:'';
-      const dz={id:'dz_'+t.id,title:t.title,artist,duration:t.duration,preview:t.preview||'',cover,emoji:'🎵'};
-      const coverHtml=cover?`<img src="${cover}" style="width:100%;height:100%;object-fit:cover;border-radius:10px" loading="lazy">`:`<span style="font-size:18px">🎵</span>`;
-      return `<div class="trow" onclick='playDeezer(${JSON.stringify(dz)})'>
-        <div class="t-cover" style="background:#1e1e1e">${coverHtml}</div>
-        <div class="t-info">
-          <div class="t-title">${t.title}<span class="s-badge s-badge-dz">D</span></div>
-          <div class="t-artist">${artist}</div>
-        </div>
-        <div class="t-meta"><span class="t-dur">${fmt(t.duration)}</span></div>
+  if(dz.length){
+    h+='<div class="s-sep">DEEZER</div>';
+    h+=dz.map((t,i)=>{
+      const artist=t.artist?.name||'';
+      const cover=t.album?.cover_medium||'';
+      const obj={id:'dz_'+t.id,title:t.title,artist,duration:t.duration,preview:t.preview||'',cover,emoji:'🎵',genre:'remix'};
+      const coverHtml=cover?`<img src="${cover}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" loading="lazy">`:(artist[0]||'?');
+      return `<div class="trow" onclick='playWorld(${JSON.stringify(obj)})'>
+        <div class="t-num">${i+1}</div>
+        <div class="t-cover" style="background:#1e1e30">${coverHtml}</div>
+        <div class="t-info"><div class="t-title">${t.title}<span class="src-badge badge-dz">D</span></div><div class="t-sub">${artist}</div></div>
+        <div class="t-right"><span class="t-dur">${fmt(t.duration)}</span></div>
       </div>`;
     }).join('');
   }
-
-  // ITUNES section
-  if(itunes.length){
-    html+=`<div class="s-section">iTUNES <div class="s-section-line"></div></div>`;
-    html+=itunes.map(t=>{
+  if(it.length){
+    h+='<div class="s-sep">iTUNES</div>';
+    h+=it.map((t,i)=>{
       const cover=(t.artworkUrl100||'').replace('100x100','200x200');
       const dur=Math.round((t.trackTimeMillis||0)/1000);
-      const dz={id:'it_'+t.trackId,title:t.trackName||'',artist:t.artistName||'',duration:dur,preview:t.previewUrl||'',cover,emoji:'🎵'};
-      const coverHtml=cover?`<img src="${cover}" style="width:100%;height:100%;object-fit:cover;border-radius:10px" loading="lazy">`:`<span style="font-size:18px">🎵</span>`;
-      return `<div class="trow" onclick='playDeezer(${JSON.stringify(dz)})'>
-        <div class="t-cover" style="background:#1e1e1e">${coverHtml}</div>
-        <div class="t-info">
-          <div class="t-title">${t.trackName||''}<span class="s-badge s-badge-it">♪</span></div>
-          <div class="t-artist">${t.artistName||''}</div>
-        </div>
-        <div class="t-meta"><span class="t-dur">${fmt(dur)}</span></div>
+      const obj={id:'it_'+t.trackId,title:t.trackName||'',artist:t.artistName||'',duration:dur,preview:t.previewUrl||'',cover,emoji:'🎵',genre:'remix'};
+      const coverHtml=cover?`<img src="${cover}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" loading="lazy">`:((t.artistName||'?')[0]);
+      return `<div class="trow" onclick='playWorld(${JSON.stringify(obj)})'>
+        <div class="t-num">${i+1}</div>
+        <div class="t-cover" style="background:#1e1e30">${coverHtml}</div>
+        <div class="t-info"><div class="t-title">${t.trackName||''}<span class="src-badge badge-it">♪</span></div><div class="t-sub">${t.artistName||''}</div></div>
+        <div class="t-right"><span class="t-dur">${fmt(dur)}</span></div>
       </div>`;
     }).join('');
   }
-
-  el.innerHTML=html;
+  el.innerHTML=h;
 }
 
-// PAGE NAVIGATION
+// Play world track (Deezer/iTunes) — try yt-dlp stream, fallback preview
+async function playWorld(t){
+  currentSource='deezer';
+  currentTrack=t;
+  showPage('player');
+  audio.pause();
+  document.getElementById('fp-title').textContent=t.title;
+  document.getElementById('fp-artist').textContent=t.artist||'';
+  document.getElementById('fp-source').textContent='⏳ Загружаем полный трек...';
+  document.getElementById('btn-play').querySelector ? null : null;
+  setPlayIcon(false);
+  const disc=document.getElementById('fp-disc');
+  if(t.cover){disc.innerHTML=`<img src="${t.cover}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;disc.className='fp-disc spinning';}
+  else{disc.className='fp-disc g-remix spinning';disc.innerHTML='<span class="disc-emoji">🎵</span>';}
+  updateMini();
+  document.getElementById('mini').classList.add('visible');
+  palIdx=(palIdx+1)%8;
+  startWave();
+
+  // Try Railway yt-dlp
+  const q=encodeURIComponent(t.title+' '+(t.artist||''));
+  try{
+    const r=await fetch(PROXY+'/yt/url?q='+q,{signal:AbortSignal.timeout(15000)});
+    if(r.ok){
+      const d=await r.json();
+      if(d.url){
+        audio.src=d.url;
+        audio.play().catch(()=>{});
+        isPlaying=true;
+        setPlayIcon(true);
+        document.getElementById('fp-source').textContent='🎵 ПОЛНЫЙ ТРЕК · YOUTUBE';
+        return;
+      }
+    }
+  }catch(e){}
+
+  // Fallback: preview
+  if(t.preview){
+    audio.src=t.preview;
+    audio.play().catch(()=>{});
+    isPlaying=true;
+    setPlayIcon(true);
+    document.getElementById('fp-source').textContent='⚠️ ПРЕВЬЮ 30 СЕК';
+  } else {
+    document.getElementById('fp-source').textContent='❌ Трек недоступен';
+  }
+}
+
+// ===== NAVIGATION =====
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('pg-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  if(name==='player') document.getElementById('mini').style.display='none';
-  else document.getElementById('mini').style.display='';
+  const nb=document.getElementById('nav-'+name);
+  if(nb) nb.classList.add('active');
+  const mini=document.getElementById('mini');
+  mini.style.display=name==='player'?'none':'';
 }
 
-// INIT
-renderList(TRACKS);
+// ===== INIT =====
+renderSongs(TRACKS);
+initGenreCounts();
 startWave();
-// autoplay first track
+// Load first track silently
 setTimeout(()=>{
-  if(!currentTrack){ playLocal(TRACKS[0].id); audio.pause(); isPlaying=false; document.getElementById('btn-play').textContent='▶'; document.getElementById('mini-play').textContent='▶'; }
-},300);
+  if(!currentTrack&&TRACKS.length){
+    currentTrack=TRACKS[0];
+    currentSource='local';
+    updatePlayerUI();
+    updateMini();
+    audio.pause();
+    isPlaying=false;
+    setPlayIcon(false);
+    document.getElementById('fp-disc').classList.add('paused');
+    document.getElementById('mini').classList.add('visible');
+  }
+},200);
 </script>
-
-
 </body>
 </html>
