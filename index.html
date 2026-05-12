@@ -347,8 +347,8 @@ body::after{
 .fp-topbar button{font-size:20px;color:#1a4060;padding:4px}
 
 /* Disc */
-.fp-cover-wrap{position:relative;width:220px;height:220px;margin-bottom:24px}
-.fp-disc{width:220px;height:220px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;border:2px solid rgba(0,100,255,.3);box-shadow:0 0 40px rgba(0,100,255,.2),0 0 80px rgba(0,50,150,.15)}
+.fp-cover-wrap{position:relative;width:300px;height:300px;margin-bottom:20px;flex-shrink:0}
+.fp-disc{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:2px solid rgba(0,100,255,.3);box-shadow:0 0 40px rgba(0,100,255,.2),0 0 80px rgba(0,50,150,.15);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;background:#040c1e}
 .fp-disc img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .disc-emoji{font-size:64px}
 .fp-disc.spinning{animation:discSpin 10s linear infinite}
@@ -356,8 +356,8 @@ body::after{
 @keyframes discSpin{to{transform:rotate(360deg)}}
 /* Center hole */
 .fp-disc::after{content:'';position:absolute;width:24px;height:24px;background:#05080f;border-radius:50%;border:2px solid rgba(0,100,255,.4);box-shadow:0 0 8px rgba(0,180,255,.3)}
-canvas#waveCanvas{position:absolute;inset:-24px;pointer-events:none}
-.fp-nav-arrows{position:absolute;top:50%;transform:translateY(-50%);width:calc(100% + 60px);left:-30px;display:flex;justify-content:space-between;pointer-events:none}
+canvas#waveCanvas{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:228px;height:228px;pointer-events:none}
+.fp-nav-arrows{display:none}
 .fp-arrow{pointer-events:all;width:36px;height:36px;background:rgba(0,100,255,.1);border:1px solid rgba(0,100,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s;backdrop-filter:blur(10px)}
 .fp-arrow:active{background:rgba(0,100,255,.3);box-shadow:0 0 12px rgba(0,180,255,.4)}
 
@@ -388,6 +388,13 @@ input[type=range].fp-prog::-webkit-slider-thumb{-webkit-appearance:none;width:14
 input[type=range].fp-vol{flex:1;-webkit-appearance:none;appearance:none;height:3px;background:var(--card2);border-radius:4px;outline:none;cursor:pointer}
 input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--blue);border-radius:50%;box-shadow:0 0 6px rgba(0,180,255,.5)}
 .fp-counter{font-size:11px;color:#1a3050;text-align:center}
+/* ===== CIRCULAR CONTROLS ===== */
+.circ-btn{position:absolute;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,80,200,.15);border:1.5px solid rgba(0,150,255,.25);color:#2a6090;transition:all .2s;backdrop-filter:blur(10px);cursor:pointer}
+.circ-btn:active{transform:scale(.88)!important;background:rgba(0,150,255,.3);box-shadow:0 0 16px rgba(0,200,255,.5)}
+.circ-btn.on{color:var(--blue);border-color:var(--blue);box-shadow:0 0 12px rgba(0,150,255,.4)}
+.circ-btn-play{position:absolute;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--blue2),var(--blue));border:none;color:#fff;box-shadow:0 0 30px rgba(0,100,255,.7),0 0 60px rgba(0,50,200,.4);transition:transform .15s;cursor:pointer;top:50%;left:50%;transform:translate(-50%,-50%)}
+.circ-btn-play:active{transform:translate(-50%,-50%) scale(.92)}
+.car-disc-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:180px;height:180px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center}
 
 /* ===== MINI PLAYER ===== */
 .mini{position:fixed;bottom:56px;left:0;right:0;background:rgba(4,8,20,.97);backdrop-filter:blur(30px);border-top:1px solid var(--border);display:flex;align-items:center;padding:10px 16px;gap:12px;z-index:200;cursor:pointer;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
@@ -612,12 +619,97 @@ input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12p
       <button>⋮</button>
     </div>
     <div class="fp-cover-wrap">
-      <div class="fp-disc g-remix paused" id="fp-disc"><span class="disc-emoji" id="fp-emoji">🎵</span></div>
-      <canvas id="waveCanvas" width="268" height="268"></canvas>
-      <div class="fp-nav-arrows">
-        <button class="fp-arrow" onclick="prevTrack()">‹</button>
-        <button class="fp-arrow" onclick="nextTrack()">›</button>
+      <!-- Waveform ring -->
+      <canvas id="waveCanvas" width="300" height="300"></canvas>
+      <!-- Disc with car image -->
+      <div class="fp-disc g-remix paused" id="fp-disc">
+        <svg id="disc-car-svg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;position:absolute;inset:0">
+          <!-- Night sky -->
+          <rect width="180" height="180" fill="#030a18"/>
+          <!-- Stars -->
+          <circle cx="20" cy="20" r="1" fill="white" opacity=".8"/>
+          <circle cx="50" cy="12" r="1.2" fill="white" opacity=".6"/>
+          <circle cx="80" cy="8" r="1" fill="white" opacity=".9"/>
+          <circle cx="120" cy="15" r="1" fill="white" opacity=".7"/>
+          <circle cx="155" cy="10" r="1.2" fill="white" opacity=".8"/>
+          <circle cx="160" cy="35" r="1" fill="white" opacity=".5"/>
+          <circle cx="30" cy="40" r="1" fill="white" opacity=".6"/>
+          <!-- Moon -->
+          <circle cx="145" cy="25" r="8" fill="rgba(180,220,255,.85)"/>
+          <circle cx="148" cy="22" r="6" fill="#030a18"/>
+          <!-- Road -->
+          <rect x="0" y="130" width="180" height="50" fill="#060e1e"/>
+          <rect x="0" y="130" width="180" height="2" fill="rgba(0,100,255,.2)"/>
+          <!-- Road dashes -->
+          <rect x="87" y="135" width="6" height="15" fill="rgba(0,180,255,.3)" rx="2"/>
+          <rect x="87" y="158" width="6" height="15" fill="rgba(0,180,255,.3)" rx="2"/>
+          <!-- City silhouette -->
+          <polygon points="0,130 0,90 10,90 10,80 20,80 20,95 30,95 30,70 40,70 40,85 50,85 50,60 58,60 58,80 65,80 65,90 80,90 80,75 88,75 88,130" fill="#060c1a"/>
+          <polygon points="180,130 180,90 170,90 170,80 160,80 160,95 150,95 150,70 140,70 140,85 130,85 130,60 122,60 122,80 115,80 115,90 100,90 100,75 92,75 92,130" fill="#060c1a"/>
+          <!-- CAR BODY -->
+          <defs>
+            <linearGradient id="dBodyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1a3a6a"/>
+              <stop offset="100%" stop-color="#060e20"/>
+            </linearGradient>
+            <filter id="dGlow"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <!-- Car shadow -->
+          <ellipse cx="90" cy="133" rx="55" ry="4" fill="rgba(0,30,100,.5)"/>
+          <!-- Lower body -->
+          <path d="M35 118 Q45 121 90 122 Q135 121 145 118 L143 115 Q110 117 90 117 Q70 117 37 115 Z" fill="#060e1a"/>
+          <!-- Main body -->
+          <path d="M30 115 Q38 112 48 107 L55 95 Q65 85 78 82 L102 82 Q115 85 125 95 L132 107 Q142 112 150 115 L150 120 Q120 123 90 123 Q60 123 30 120 Z" fill="url(#dBodyGrad)"/>
+          <!-- Glass -->
+          <path d="M57 107 L62 93 Q70 84 80 81 L100 81 Q110 84 118 93 L123 107 Z" fill="rgba(68,136,204,.6)"/>
+          <!-- Roof -->
+          <path d="M62 93 Q70 84 80 81 L100 81 Q110 84 118 93 L113 93 Q105 85 100 83 L80 83 Q75 85 67 93 Z" fill="#0d2245"/>
+          <!-- Neon underline -->
+          <path d="M38 118 Q90 120 142 118" stroke="#00aaff" stroke-width="1.5" opacity=".8" filter="url(#dGlow)"/>
+          <!-- Headlights -->
+          <path d="M143 104 L150 107 L150 113 L143 111 Z" fill="#aaccff" opacity=".9" filter="url(#dGlow)"/>
+          <path d="M143 104 L150 107" stroke="#00ccff" stroke-width="2" stroke-linecap="round" filter="url(#dGlow)"/>
+          <!-- Tail lights -->
+          <path d="M30 104 L37 101 L37 111 L30 109 Z" fill="#cc0000" opacity=".8" filter="url(#dGlow)"/>
+          <!-- Wheels -->
+          <circle cx="120" cy="122" r="10" fill="#0a1428" stroke="#2266aa" stroke-width="1.5"/>
+          <circle cx="120" cy="122" r="6" fill="#0d2040" stroke="#4488cc" stroke-width="1"/>
+          <circle cx="120" cy="122" r="2.5" fill="#0a1428" stroke="#4488cc" stroke-width=".8"/>
+          <line x1="120" y1="116" x2="120" y2="128" stroke="#2266aa" stroke-width="1" opacity=".7"/>
+          <line x1="114" y1="122" x2="126" y2="122" stroke="#2266aa" stroke-width="1" opacity=".7"/>
+          <circle cx="60" cy="122" r="10" fill="#0a1428" stroke="#2266aa" stroke-width="1.5"/>
+          <circle cx="60" cy="122" r="6" fill="#0d2040" stroke="#4488cc" stroke-width="1"/>
+          <circle cx="60" cy="122" r="2.5" fill="#0a1428" stroke="#4488cc" stroke-width=".8"/>
+          <line x1="60" y1="116" x2="60" y2="128" stroke="#2266aa" stroke-width="1" opacity=".7"/>
+          <line x1="54" y1="122" x2="66" y2="122" stroke="#2266aa" stroke-width="1" opacity=".7"/>
+        </svg>
+        <span class="disc-emoji" id="fp-emoji" style="position:relative;z-index:3;display:none">🎵</span>
       </div>
+      <!-- Circular buttons: positioned at 5 points around disc -->
+      <!-- TOP: Shuffle (270deg = top) -->
+      <button class="circ-btn" id="btn-shuf" onclick="toggleShuffle()" style="top:2px;left:50%;transform:translateX(-50%)" title="Shuffle">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+      </button>
+      <!-- TOP-LEFT: Prev (210deg) -->
+      <button class="circ-btn" onclick="prevTrack()" style="top:22%;left:2px" title="Prev">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      </button>
+      <!-- TOP-RIGHT: Next (330deg) -->
+      <button class="circ-btn" onclick="nextTrack()" style="top:22%;right:2px" title="Next">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+      </button>
+      <!-- BOTTOM-LEFT: Repeat (150deg) -->
+      <button class="circ-btn" id="btn-rep" onclick="toggleRepeat()" style="bottom:22%;left:2px" title="Repeat">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+      </button>
+      <!-- BOTTOM-RIGHT: Like (30deg) -->
+      <button class="circ-btn" id="btn-like-fp" onclick="likeCurrentTrack(this)" style="bottom:22%;right:2px" title="Like">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </button>
+      <!-- CENTER PLAY BUTTON (on top of disc) -->
+      <button class="circ-btn-play" id="btn-play" onclick="togglePlay()">
+        <svg id="play-icon" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
     </div>
     <div class="fp-info">
       <div class="fp-track-title" id="fp-title">Выбери трек</div>
@@ -628,23 +720,7 @@ input[type=range].fp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:12p
       <input type="range" class="fp-prog" id="fp-prog" min="0" max="100" value="0" oninput="seekTo(this.value)">
     </div>
     <div class="fp-times"><span id="fp-cur">0:00</span><span id="fp-dur">0:00</span></div>
-    <div class="fp-controls">
-      <button class="ctrl-side" id="btn-shuf" onclick="toggleShuffle()">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-      </button>
-      <button class="ctrl-prev" onclick="prevTrack()">
-        <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-      </button>
-      <button class="ctrl-play" id="btn-play" onclick="togglePlay()">
-        <svg id="play-icon" viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-      <button class="ctrl-next" onclick="nextTrack()">
-        <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-      </button>
-      <button class="ctrl-side" id="btn-rep" onclick="toggleRepeat()">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-      </button>
-    </div>
+    <!-- controls moved to circular layout above -->
     <div class="fp-vol-row">
       <span class="vol-icon">🔈</span>
       <input type="range" class="fp-vol" id="fp-vol" min="0" max="100" value="80" oninput="setVol(this.value)">
@@ -949,6 +1025,8 @@ function filterSongs(g,el){
   renderSongs(filteredTracks);
 }
 function toggleLike(id,btn){likes[id]?delete likes[id]:likes[id]=1;localStorage.setItem('emx_likes',JSON.stringify(likes));btn.classList.toggle('liked');}
+function likeCurrentTrack(btn){if(!currentTrack)return;const id=currentTrack.id;likes[id]?delete likes[id]:likes[id]=1;localStorage.setItem('emx_likes',JSON.stringify(likes));btn.classList.toggle('on');const row=document.getElementById('row-'+id);if(row){const lb=row.querySelector('.like-btn');if(lb)lb.classList.toggle('liked',[likes[id]]);}
+}
 function initGenreCounts(){['remix','love','hiphop','electronic','winter','city'].forEach(g=>{const el=document.getElementById('gc-'+g);if(el)el.textContent=TRACKS.filter(t=>t.genre===g).length+' треков';});}
 function goGenre(g){
   filteredTracks=TRACKS.filter(t=>t.genre===g);
