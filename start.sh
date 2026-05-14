@@ -18,3 +18,5 @@ echo "Bot loop started"
 
 # Start proxy server in foreground (Railway keeps container alive via this)
 python server.py
+
+# deploy 1778733534
