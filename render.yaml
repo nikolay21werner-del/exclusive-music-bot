@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: exclusive-music-proxy
+    env: python
+    plan: free
+    buildCommand: pip install flask flask-cors requests gunicorn
+    startCommand: gunicorn server:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: BOT_TOKEN
+        value: 7611594840:AAEAh5xvmWnMIpybzkIHPNPKKvWlEbozJ_E
