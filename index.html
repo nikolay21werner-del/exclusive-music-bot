@@ -1005,7 +1005,10 @@ const GENRE_COLORS = {
 };
 const GENRE_NAMES = {remix:'Remix',love:'Love',hiphop:'Hip-Hop',electronic:'Electronic',winter:'Winter',city:'City'};
 
-const PROXY = 'https://web-production-6791f.up.railway.app';
+const PROXY = 'https://web-production-6791f.up.railway.app'; // DOWN
+const TG_TOKEN = '7611594840:AAEAh5xvmWnMIpybzkIHPNPKKvWlEbozJ_E';
+const TG_API = 'https://api.telegram.org/bot' + TG_TOKEN;
+const TG_FILE = 'https://api.telegram.org/file/bot' + TG_TOKEN;
 const DEEZER_PROXY = ''; // removed — unreliable
 const VK_APP_ID = '54589059';
 
@@ -1077,8 +1080,6 @@ function playLocal(id) {
 function loadTrack(t) {
   if (!t) return;
   curTrack = t;
-  // Railway proxy is down — audio plays via Telegram file_id sent through bot
-  // For now show track info without audio src to avoid error loop
   audio.src = '';
   curPhoto = CAR_PHOTOS[carIdx++ % CAR_PHOTOS.length];
   updatePlayerUI();
@@ -1086,6 +1087,25 @@ function loadTrack(t) {
   document.querySelectorAll('.t-row').forEach(function(r){
     r.classList.toggle('now', r.dataset.id == t.id);
   });
+  // Get direct audio URL from Telegram Bot API
+  if (t.file_id) {
+    document.getElementById('pl-src').textContent = 'ЗАГРУЗКА...';
+    fetch(TG_API + '/getFile?file_id=' + encodeURIComponent(t.file_id))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.ok && d.result && d.result.file_path) {
+          var url = TG_FILE + '/' + d.result.file_path;
+          audio.src = url;
+          document.getElementById('pl-src').textContent = 'EXCLUSIVE · ' + t.artist.toUpperCase();
+          if (playing) audio.play().catch(function(){});
+        } else {
+          document.getElementById('pl-src').textContent = 'ОШИБКА ЗАГРУЗКИ';
+        }
+      })
+      .catch(function(e){
+        document.getElementById('pl-src').textContent = 'НЕТ СЕТИ';
+      });
+  }
 }
 
 function updatePlayerUI() {
