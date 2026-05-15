@@ -137,7 +137,31 @@ input[type=range]{-webkit-appearance:none;appearance:none;background:transparent
 /* ═══════════════════════════════════════════
    PAGE 1 — SONGS (Apple Music Library)
 ═══════════════════════════════════════════ */
-#pg-songs{}
+#pg-songs{
+  background: #000 url('https://nikolay21werner-del.github.io/exclusive-music-bot/splash_bg.png') center center / cover no-repeat;
+  background-attachment: local;
+}
+#pg-songs::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  bottom:calc(56px + env(safe-area-inset-bottom));
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.55) 0%,
+    rgba(0,10,30,0.35) 40%,
+    rgba(0,10,30,0.35) 60%,
+    rgba(0,0,0,0.75) 100%
+  );
+  pointer-events:none;
+  z-index:0;
+}
+#pg-songs .lib-header,
+#pg-songs .filter-bar,
+#pg-songs #track-list{
+  position:relative;
+  z-index:1;
+}
 .lib-header{padding:56px 16px 8px;}
 .lib-title{font-size:34px;font-weight:700;letter-spacing:-0.5px;color:#fff;}
 .lib-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px;}
