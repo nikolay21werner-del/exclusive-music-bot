@@ -1066,46 +1066,77 @@ function setGenre(g, el) {
 // PLAY
 // ═══════════════════════════════════════════════════════
 function playLocal(id) {
-  const t = TRACKS.find(function(x){return x.id === id;});
+  var t = TRACKS.find(function(x){return x.id === id;});
   if (!t) return;
-  const idx = filtered.indexOf(t);
+  var idx = filtered.indexOf(t);
   curIdx = idx >= 0 ? idx : 0;
-  loadTrack(t);
-  audio.play().catch(function(){});
   playing = true;
-  updateIcons();
+  loadTrack(t);
   showPage('player');
 }
 
 function loadTrack(t) {
   if (!t) return;
   curTrack = t;
+  audio.pause();
   audio.src = '';
+  playing = false;
+  updateIcons();
   curPhoto = CAR_PHOTOS[carIdx++ % CAR_PHOTOS.length];
   updatePlayerUI();
   updateMini();
   document.querySelectorAll('.t-row').forEach(function(r){
     r.classList.toggle('now', r.dataset.id == t.id);
   });
-  // Get direct audio URL from Telegram Bot API
-  if (t.file_id) {
-    document.getElementById('pl-src').textContent = 'ЗАГРУЗКА...';
-    fetch(TG_API + '/getFile?file_id=' + encodeURIComponent(t.file_id))
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        if (d.ok && d.result && d.result.file_path) {
-          var url = TG_FILE + '/' + d.result.file_path;
-          audio.src = url;
-          document.getElementById('pl-src').textContent = 'EXCLUSIVE · ' + t.artist.toUpperCase();
-          if (playing) audio.play().catch(function(){});
-        } else {
-          document.getElementById('pl-src').textContent = 'ОШИБКА ЗАГРУЗКИ';
-        }
-      })
-      .catch(function(e){
-        document.getElementById('pl-src').textContent = 'НЕТ СЕТИ';
+  if (!t.file_id) return;
+
+  var srcEl = document.getElementById('pl-src');
+  srcEl.textContent = '⏳ ЗАГРУЗКА...';
+
+  // Step 1: get file_path via Bot API (has CORS *)
+  fetch(TG_API + '/getFile?file_id=' + encodeURIComponent(t.file_id))
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok || !d.result || !d.result.file_path) {
+        srcEl.textContent = '❌ ОШИБКА';
+        return;
+      }
+      // Step 2: build direct URL — audio tag does NOT send CORS preflight
+      // Telegram file server supports Range requests (seeking works)
+      var directUrl = TG_FILE + '/' + d.result.file_path;
+
+      // Try proxy first (if up), fallback to direct
+      var proxyUrl = PROXY + '/audio/' + encodeURIComponent(t.file_id);
+
+      // Check if proxy is alive (fast timeout)
+      var proxyOk = false;
+      var proxyCheck = new Promise(function(resolve) {
+        var ctrl = new AbortController();
+        var tm = setTimeout(function(){ ctrl.abort(); resolve(false); }, 2000);
+        fetch(PROXY + '/', { signal: ctrl.signal, method: 'GET' })
+          .then(function(r){ clearTimeout(tm); resolve(r.ok); })
+          .catch(function(){ clearTimeout(tm); resolve(false); });
       });
-  }
+
+      proxyCheck.then(function(up) {
+        var useUrl = up ? proxyUrl : directUrl;
+        audio.src = useUrl;
+        audio.load();
+        srcEl.textContent = 'EXCLUSIVE · ' + t.artist.toUpperCase();
+        playing = true;
+        updateIcons();
+        document.getElementById('pl-art').classList.add('play');
+        audio.play().catch(function(e){
+          // If direct URL blocked, show error
+          srcEl.textContent = '🔇 НЕТ ЗВУКА — CORS';
+          playing = false;
+          updateIcons();
+        });
+      });
+    })
+    .catch(function(){
+      srcEl.textContent = '❌ НЕТ СЕТИ';
+    });
 }
 
 function updatePlayerUI() {
@@ -1212,9 +1243,26 @@ audio.addEventListener('ended', function(){ if (!repeat) nextTrack(); });
 audio.addEventListener('play', function(){ playing=true; updateIcons(); document.getElementById('pl-art').classList.add('play'); });
 audio.addEventListener('pause', function(){ playing=false; updateIcons(); document.getElementById('pl-art').classList.remove('play'); });
 audio.addEventListener('error', function(){
-  // Railway proxy is down — show error in player, don't loop
-  if (document.getElementById('pl-src')) {
-    document.getElementById('pl-src').textContent = 'НЕТ ПОДКЛЮЧЕНИЯ';
+  var srcEl = document.getElementById('pl-src');
+  if (!curTrack || !curTrack.file_id) return;
+  // If proxy URL failed — try direct Telegram URL as fallback
+  if (audio.src && audio.src.includes(PROXY)) {
+    srcEl && (srcEl.textContent = '⏳ прямой URL...');
+    fetch(TG_API + '/getFile?file_id=' + encodeURIComponent(curTrack.file_id))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.ok && d.result && d.result.file_path) {
+          audio.src = TG_FILE + '/' + d.result.file_path;
+          audio.load();
+          audio.play().catch(function(){
+            srcEl && (srcEl.textContent = '🔇 АУДИО НЕДОСТУПНО');
+            playing = false; updateIcons();
+          });
+        }
+      }).catch(function(){});
+  } else {
+    srcEl && (srcEl.textContent = '❌ ОШИБКА АУДИО');
+    playing = false; updateIcons();
   }
 });
 
