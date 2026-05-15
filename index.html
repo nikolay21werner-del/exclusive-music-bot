@@ -801,23 +801,12 @@ input[type=range]{-webkit-appearance:none;appearance:none;background:transparent
 // ── SPLASH ──────────────────────────────────
 (function(){
   const splash = document.getElementById('splash');
-  const bar = document.getElementById('sbar');
   if(!splash) return;
-  let p = 0;
-  const iv = setInterval(()=>{
-    p += Math.random()*18 + 4;
-    if(p >= 92){ p = 92; clearInterval(iv); }
-    bar.style.width = p + '%';
-  }, 120);
   function hideSplash(){
-    bar.style.width = '100%';
-    setTimeout(()=>{
-      splash.classList.add('hide');
-      setTimeout(()=>{ splash.style.display='none'; }, 650);
-    }, 300);
+    splash.classList.add('hide');
+    setTimeout(function(){ splash.style.display='none'; }, 700);
   }
-  // Hide after tracks load OR max 2.8s
-  window.addEventListener('tracksReady', hideSplash, {once:true});
+  // Hide after 35 seconds (CSS progress bar animates independently)
   setTimeout(hideSplash, 35000);
 })();
 
@@ -1087,7 +1076,9 @@ function playLocal(id) {
 function loadTrack(t) {
   if (!t) return;
   curTrack = t;
-  audio.src = PROXY + '/audio/' + encodeURIComponent(t.file_id);
+  // Railway proxy is down — audio plays via Telegram file_id sent through bot
+  // For now show track info without audio src to avoid error loop
+  audio.src = '';
   curPhoto = CAR_PHOTOS[carIdx++ % CAR_PHOTOS.length];
   updatePlayerUI();
   updateMini();
@@ -1199,7 +1190,12 @@ audio.addEventListener('timeupdate', function() {
 audio.addEventListener('ended', function(){ if (!repeat) nextTrack(); });
 audio.addEventListener('play', function(){ playing=true; updateIcons(); document.getElementById('pl-art').classList.add('play'); });
 audio.addEventListener('pause', function(){ playing=false; updateIcons(); document.getElementById('pl-art').classList.remove('play'); });
-audio.addEventListener('error', function(){ if (curTrack) playWorld(curTrack); });
+audio.addEventListener('error', function(){
+  // Railway proxy is down — show error in player, don't loop
+  if (document.getElementById('pl-src')) {
+    document.getElementById('pl-src').textContent = 'НЕТ ПОДКЛЮЧЕНИЯ';
+  }
+});
 
 // ═══════════════════════════════════════════════════════
 // WORLD PLAYBACK (fallback)
@@ -1223,17 +1219,8 @@ async function playWorld(t) {
     document.getElementById('pl-src').textContent = 'ITUNES PREVIEW';
     return;
   }
-  document.getElementById('pl-src').textContent = 'ЗАГРУЗКА...';
-  try {
-    const r = await fetch(PROXY + '/yt/url?q=' + encodeURIComponent(t.title + ' ' + t.artist));
-    const d = await r.json();
-    if (d.url) {
-      audio.src = d.url;
-      audio.play().catch(function(){});
-      playing = true; updateIcons();
-      document.getElementById('pl-src').textContent = 'YOUTUBE';
-    }
-  } catch(e) { document.getElementById('pl-src').textContent = 'ОШИБКА'; }
+  document.getElementById('pl-src').textContent = 'EXCLUSIVE';
+  // Proxy unavailable — gracefully degrade, show track info only
 }
 
 // ═══════════════════════════════════════════════════════
